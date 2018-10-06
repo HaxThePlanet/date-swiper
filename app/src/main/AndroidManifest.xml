@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.swiper">
+    package="com.tinderizer">
 
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,7 +32,12 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5336818452987335~2377363785"/>
+            android:value="ca-app-pub-5336818452987335~2718955199"/>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="640434ba300db144caa587ee991bd41969d4c024"
+            />
     </application>
 
 </manifest>

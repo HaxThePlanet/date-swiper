@@ -1,4 +1,4 @@
-package com.swiper;
+package com.tinderizer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

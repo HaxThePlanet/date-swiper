@@ -1,13 +1,11 @@
-package com.swiper.utils;
+package com.tinderizer.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
+import android.provider.Settings;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
-
-import com.swiper.LoadingActivity;
 
 import java.util.Random;
 
@@ -24,6 +22,7 @@ public class Utils {
 
         //kill cookies
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
 //        } else {
@@ -37,12 +36,7 @@ public class Utils {
         }
     }
 
-    private void showLoading(Context ctx) {
-        Intent myIntent = new Intent(ctx, LoadingActivity.class);
-        ctx.startActivity(myIntent);
-    }
-
-    private void hideLoading() {
-
+    public static String getDeviceID(Context ctx) {
+        return Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 }

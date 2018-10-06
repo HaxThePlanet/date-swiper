@@ -1,4 +1,4 @@
-package com.swiper;
+package com.tinderizer;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -9,24 +9,46 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Switch;
+
+import com.pddstudio.preferences.encrypted.EncryptedPreferences;
+import com.tinderizer.utils.Utils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
+    private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
+    private final String NOTIF_KEY = "NOTIF_KEY";
+
     @BindView(R.id.changeLocation)
     ImageButton changeLocation;
 
     @BindView(R.id.logoutButton)
     Button logoutButton;
 
+    @BindView(R.id.notifSwitch)
+    Switch notifSwitch;
+
+    @BindView(R.id.fastSwipeSwitch)
+    Switch fastSwipeSwitch;
+
+    String deviceID;
+    EncryptedPreferences encryptedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+
+        deviceID = Utils.getDeviceID(this);
+        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
+
+        setupSwitches();
 
         //change location
         changeLocation.setOnClickListener(new View.OnClickListener() {
@@ -42,11 +64,14 @@ public class SettingsActivity extends AppCompatActivity {
                                 Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.tinder");
                                 if (launchIntent != null) {
                                     startActivity(launchIntent);
+
+                                    //exit
+                                    System.exit(1);
                                 } else {
                                     AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
                                     alert.setTitle("");
                                     alert.setMessage("Please install the Tinder app");
-                                    alert.setPositiveButton("OK",null);
+                                    alert.setPositiveButton("OK", null);
                                     alert.show();
                                 }
                             }
@@ -74,6 +99,27 @@ public class SettingsActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+        notifSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                encryptedPreferences.edit()
+                        .putBoolean(NOTIF_KEY, isChecked)
+                        .apply();
+            }
+        });
+
+        fastSwipeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                encryptedPreferences.edit()
+                        .putBoolean(FAST_SWIPE_KEY, isChecked)
+                        .apply();
+            }
+        });
+    }
+
+    private void setupSwitches() {
+        notifSwitch.setChecked(encryptedPreferences.getBoolean(NOTIF_KEY, true));
+        fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
     }
 
     private void logoutTinder() {
@@ -88,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
 //        }
 
         //blow cache
-        ((ActivityManager)getApplicationContext().getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
+        ((ActivityManager) getApplicationContext().getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
 
         //exit
         System.exit(1);

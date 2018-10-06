@@ -1,10 +1,10 @@
-package com.swiper;
+package com.tinderizer;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.swiper.events.MessageEvents;
+import com.tinderizer.events.MessageEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

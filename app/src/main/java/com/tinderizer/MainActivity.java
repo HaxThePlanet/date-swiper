@@ -1,4 +1,4 @@
-package com.swiper;
+package com.tinderizer;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -28,10 +28,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.swiper.events.MessageEvents;
-import com.swiper.utils.Utils;
+import com.crashlytics.android.Crashlytics;
+import com.pddstudio.preferences.encrypted.EncryptedPreferences;
+import com.tinderizer.events.MessageEvents;
+import com.tinderizer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.HashSet;
 
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,25 +48,24 @@ public class MainActivity extends AppCompatActivity {
     private static String mGeolocationOrigin;
     private static GeolocationPermissions.Callback mGeolocationCallback;
     private static int numSwipes;
+    private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
+    private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
+    private final String NOTIF_KEY = "NOTIF_KEY";
     WebView mWebview;
     Handler customHandler = new Handler();
     boolean go;
     int webviewHeight;
     boolean dashboardUp = false;
     CookieManager cookieManager = CookieManager.getInstance();
+    HashSet likeHashMap = new HashSet();
     private RelativeLayout mContainer;
     private String url = "https://tinder.com/app/recs";
     private String target_url_prefix = "https://tinder.com/app/recs";
     private WebView mWebviewPop;
     private AlertDialog builder;
-
     private int minSpeed = 100;
     private int maxSpeed = 2000;
-
-    HashSet likeHashMap = new HashSet();
-
-//    private RewardedVideoAd mRewardedVideoAd;
-
+    //    private RewardedVideoAd mRewardedVideoAd;
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go) {
@@ -124,15 +124,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //loading
         Intent myIntent = new Intent(this, LoadingActivity.class);
         this.startActivity(myIntent);
+
+        setupSharedPrefs();
+
+        Fabric.with(this, new Crashlytics());
 
         // Use an activity context to get the rewarded video instance.
 //        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
 //        mRewardedVideoAd.setRewardedVideoAdListener(this);
 
-        loadRewardedVideoAd();
+
+//        loadRewardedVideoAd();
 
 
         ButterKnife.bind(this);
@@ -249,6 +254,23 @@ public class MainActivity extends AppCompatActivity {
 
         android.os.Handler customHandler = new android.os.Handler();
         customHandler.postDelayed(updateTimerThread, 0);
+    }
+
+    //setup shared prefs initially
+    private void setupSharedPrefs() {
+        String deviceID = Utils.getDeviceID(this);
+        EncryptedPreferences encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
+        boolean isFirstRun = encryptedPreferences.getBoolean(FIRST_RUN_KEY, true);
+
+        //first run?
+        if (isFirstRun) {
+            //set default settings
+            encryptedPreferences.edit()
+                    .putBoolean(FIRST_RUN_KEY, false)
+                    .putBoolean(NOTIF_KEY, true)
+                    .putBoolean(FAST_SWIPE_KEY, false)
+                    .apply();
+        }
     }
 
     private void loadRewardedVideoAd() {

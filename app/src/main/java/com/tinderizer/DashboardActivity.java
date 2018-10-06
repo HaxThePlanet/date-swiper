@@ -1,4 +1,4 @@
-package com.swiper;
+package com.tinderizer;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.swiper.events.MessageEvents;
+import com.tinderizer.events.MessageEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -84,7 +84,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        MobileAds.initialize(this, "ca-app-pub-5336818452987335/9055464537");
+
+        MobileAds.initialize(this, "ca-app-pub-5336818452987335/9751267400");
 
         mAdView = findViewById(R.id.adView);
 //      AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();

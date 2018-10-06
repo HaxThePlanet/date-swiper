@@ -1,4 +1,4 @@
-package com.swiper;
+package com.tinderizer;
 
 import org.junit.Test;
 
