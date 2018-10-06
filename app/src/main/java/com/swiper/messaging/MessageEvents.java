@@ -18,4 +18,9 @@ public class MessageEvents {
         public PlayEvent() {
         }
     }
+
+    public static class LogoutEvent {
+        public LogoutEvent() {
+        }
+    }
 }

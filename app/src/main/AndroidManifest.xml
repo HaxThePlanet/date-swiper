@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:configChanges="orientation" android:screenOrientation="portrait">
+        <activity android:name=".MainActivity" android:theme="@style/Theme.AppCompat.NoActionBar" android:configChanges="orientation" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,8 +21,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DashboardActivity" android:theme="@style/Theme.AppCompat.Translucent">
+        <activity android:name=".DashboardActivity" android:theme="@style/Theme.AppCompat.Translucent" >
         </activity>
+        <activity android:name=".SettingsActivity" android:theme="@style/Theme.AppCompat.NoActionBar" >
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5336818452987335~2377363785"/>
     </application>
 
 </manifest>
