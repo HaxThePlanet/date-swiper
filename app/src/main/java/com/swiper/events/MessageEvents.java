@@ -1,4 +1,4 @@
-package com.swiper.messaging;
+package com.swiper.events;
 
 public class MessageEvents {
     public static class SwipeEvent {
@@ -21,6 +21,11 @@ public class MessageEvents {
 
     public static class LogoutEvent {
         public LogoutEvent() {
+        }
+    }
+
+    public static class CloseLoading {
+        public CloseLoading() {
         }
     }
 }

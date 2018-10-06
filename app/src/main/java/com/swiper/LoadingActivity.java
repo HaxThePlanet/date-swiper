@@ -4,14 +4,25 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.swiper.events.MessageEvents;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class SettingsActivity extends AppCompatActivity {
+public class LoadingActivity extends AppCompatActivity {
 
     @Override
     public void onStop() {
         super.onStop();
-//        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.CloseLoading event) {
+        this.finish();
     }
 
     @Override
@@ -19,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onResume();
 
         try {
-//            EventBus.getDefault().register(this);
+            EventBus.getDefault().register(this);
         } catch (Exception ex) {
         }
     }
@@ -29,11 +40,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-//        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_settings);
-
-//        EventBus.getDefault().register(this);
+        setContentView(R.layout.activity_loading);
+        EventBus.getDefault().register(this);
 
     }
 

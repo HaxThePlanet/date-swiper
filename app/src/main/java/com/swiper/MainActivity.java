@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -26,17 +25,17 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.swiper.messaging.MessageEvents;
+import com.swiper.events.MessageEvents;
 import com.swiper.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import butterknife.BindView;
+import java.util.HashSet;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
@@ -59,11 +58,12 @@ public class MainActivity extends AppCompatActivity{
     private int minSpeed = 100;
     private int maxSpeed = 2000;
 
+    HashSet likeHashMap = new HashSet();
+
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go) {
                 sendClick(mWebview);
-                numSwipes++;
             }
 
             customHandler.postDelayed(this, Utils.getRandomNumber(minSpeed, maxSpeed));
@@ -111,9 +111,10 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        Intent myIntent = new Intent(this, LoadingActivity.class);
+        this.startActivity(myIntent);
 
         ButterKnife.bind(this);
 
@@ -152,9 +153,28 @@ public class MainActivity extends AppCompatActivity{
                 if (url.contains("/recs/core")) {
                     if (dashboardUp == false) {
                         dashboardUp = true;
+
+                        //close loading screen
+                        EventBus.getDefault().post(new MessageEvents.CloseLoading());
+
+                        //show dashboard
                         Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
                         startActivity(myIntent);
                     }
+                }
+
+                if (url.contains("/like/")) {
+                    if (!likeHashMap.contains(url)) {
+                        likeHashMap.add(url);
+                    } else {
+                        //does
+                        numSwipes = numSwipes + 1;
+                    }
+                }
+
+                if (url.contains("buckets")) {
+                    //close loading screen
+                    EventBus.getDefault().post(new MessageEvents.CloseLoading());
                 }
             }
 

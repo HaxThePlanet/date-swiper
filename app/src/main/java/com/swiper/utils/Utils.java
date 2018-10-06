@@ -1,10 +1,13 @@
 package com.swiper.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+
+import com.swiper.LoadingActivity;
 
 import java.util.Random;
 
@@ -32,5 +35,14 @@ public class Utils {
             cookieSyncMngr.stopSync();
             cookieSyncMngr.sync();
         }
+    }
+
+    private void showLoading(Context ctx) {
+        Intent myIntent = new Intent(ctx, LoadingActivity.class);
+        ctx.startActivity(myIntent);
+    }
+
+    private void hideLoading() {
+
     }
 }
