@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -36,8 +37,13 @@ public class DashboardActivity extends AppCompatActivity {
     RelativeLayout bottomLayout;
 
     boolean isPlay = false;
+
     @BindView(R.id.settingsGear)
     ImageView settingsGear;
+
+    @BindView(R.id.swipeProgress)
+    ProgressBar swipeProgress;
+
     private AdView mAdView;
 
     @Override
@@ -147,7 +153,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.SwipeEvent event) {
-        swipeCount.setText("Swipes " + String.valueOf(event.count));
+        swipeCount.setText("Free Swipes Remaining " + String.valueOf(100 - event.count));
+        swipeProgress.setProgress(100 - event.count);
     }
 }
 

@@ -8,6 +8,57 @@
     tools:context=".MainActivity">
 
     <RelativeLayout
+        android:id="@+id/left_frame_layout"
+        android:layout_width="16dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/top_layout"
+        android:layout_marginBottom="16dp"
+        android:background="@color/bg_grey">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/right_frame_layout"
+        android:layout_width="16dp"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/bottom_layout"
+        android:layout_alignParentEnd="true"
+        android:background="@color/bg_grey">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/swipes_layout"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/top_layout"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/bg_grey">
+
+        <TextView
+            android:id="@+id/swipeCount"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:text="Swipes Remaining: 75" />
+
+        <ProgressBar
+            android:id="@+id/swipeProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:max="100"
+            android:min="0"
+            android:progress="75"
+            android:progressTint="@android:color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -49,17 +100,6 @@
             android:layout_centerInParent="true"
             android:background="@drawable/play" />
 
-        <TextView
-            android:id="@+id/swipeCount"
-            android:layout_width="179dp"
-            android:layout_height="80dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="Swipes Remaing 100"
-            android:textColor="@android:color/white"
-            android:textSize="18dp"
-            android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout
