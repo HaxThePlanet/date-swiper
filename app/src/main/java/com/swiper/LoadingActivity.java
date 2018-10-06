@@ -17,22 +17,20 @@ public class LoadingActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-//        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.CloseLoading event) {
         this.finish();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        try {
-            EventBus.getDefault().register(this);
-        } catch (Exception ex) {
-        }
     }
 
 
@@ -41,8 +39,6 @@ public class LoadingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_loading);
-        EventBus.getDefault().register(this);
-
     }
 
     @Override

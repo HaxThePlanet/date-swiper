@@ -36,13 +36,12 @@ public class DashboardActivity extends AppCompatActivity {
     RelativeLayout bottomLayout;
 
     boolean isPlay = false;
-    private AdView mAdView;
-
     @BindView(R.id.settingsGear)
     ImageView settingsGear;
+    private AdView mAdView;
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         moveTaskToBack(true);
     }
 
@@ -52,17 +51,22 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        try {
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
-        } catch (Exception ex) {
         }
     }
 
     private void setupFonts() {
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/deftone.ttf")
+                .setDefaultFontPath("fonts/fine.otf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );
@@ -80,7 +84,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544/6300978111");
+        MobileAds.initialize(this, "ca-app-pub-5336818452987335/9055464537");
 
         mAdView = findViewById(R.id.adView);
 //      AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();
@@ -138,27 +142,6 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
         });
-
-        swipeCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new MessageEvents.LogoutEvent());
-            }
-        });
-
-
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

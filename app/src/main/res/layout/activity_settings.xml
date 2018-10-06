@@ -5,8 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/top_layout"
@@ -18,14 +17,13 @@
 
         <TextView
             android:id="@+id/titleText"
-            fontPath="fonts/deftone.ttf"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
             android:text="Tinder Swiper"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="26dp" />
+            android:textSize="24dp" />
 
     </RelativeLayout>
 
@@ -65,11 +63,11 @@
         android:background="@color/bg_grey" />
 
     <LinearLayout
-        android:id="@+id/setting_one_layou3t"
+        android:id="@+id/setting_three_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_one_layout"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="bottom"
@@ -80,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="Setting Two"
+            android:text="Notifications"
             android:textColor="@android:color/white"
             android:textSize="16dp" />
 
@@ -93,12 +91,62 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/view"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/setting_two_layout"
+        android:layout_weight="1"
+        android:background="@color/bg_grey" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="Logout" />
+
+    <View
         android:id="@+id/view2"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/setting_one_layou3t"
+        android:layout_below="@+id/setting_two_layout"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
+
+    <RelativeLayout
+        android:id="@+id/setting_two_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/setting_three_layout"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical|center_horizontal">
+
+        <TextView
+            android:id="@+id/changeLocationText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Change Location"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <ImageButton
+            android:id="@+id/changeLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="5dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_gps_fixed_black_24dp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

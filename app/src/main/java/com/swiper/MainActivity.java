@@ -2,6 +2,7 @@ package com.swiper;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -27,6 +28,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.swiper.events.MessageEvents;
 import com.swiper.utils.Utils;
 
@@ -37,8 +40,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.HashSet;
 
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FINE_LOCATION_CODE = 0;
     private static String mGeolocationOrigin;
     private static GeolocationPermissions.Callback mGeolocationCallback;
@@ -59,6 +63,8 @@ public class MainActivity extends AppCompatActivity{
     private int maxSpeed = 2000;
 
     HashSet likeHashMap = new HashSet();
+
+//    private RewardedVideoAd mRewardedVideoAd;
 
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
@@ -81,42 +87,53 @@ public class MainActivity extends AppCompatActivity{
         go = false;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvents.LogoutEvent event) {
-        //kill session
-        Utils.killLoginSession(mWebview, getApplicationContext());
-
-        //send back to login screen
-        mWebview.loadUrl("https://www.tinder.com/");
+    @Override
+    public void onPause() {
+        super.onPause();
+//        mRewardedVideoAd.pause(this);
     }
 
+    @Override
+    public void onDestroy() {
+//        mRewardedVideoAd.destroy(this);
+        super.onDestroy();
+    }
 
     @Override
     public void onStop() {
         super.onStop();
-//        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
     public void onResume() {
+//        mRewardedVideoAd.resume(this);
         super.onResume();
-
-        try {
-            EventBus.getDefault().register(this);
-        } catch (Exception ex) {
-        }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        EventBus.getDefault().register(this);
 
         Intent myIntent = new Intent(this, LoadingActivity.class);
         this.startActivity(myIntent);
+
+        // Use an activity context to get the rewarded video instance.
+//        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+//        mRewardedVideoAd.setRewardedVideoAdListener(this);
+
+        loadRewardedVideoAd();
+
 
         ButterKnife.bind(this);
 
@@ -233,6 +250,17 @@ public class MainActivity extends AppCompatActivity{
         android.os.Handler customHandler = new android.os.Handler();
         customHandler.postDelayed(updateTimerThread, 0);
     }
+
+    private void loadRewardedVideoAd() {
+//        mRewardedVideoAd.loadAd("ca-app-pub-5336818452987335/9055464537",
+//                new AdRequest.Builder().build());
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
 
     private void sendClick(WebView wv) {
         long downTime = SystemClock.uptimeMillis();
