@@ -17,7 +17,7 @@ public class LoadingActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

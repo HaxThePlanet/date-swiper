@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -113,14 +113,14 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        EventBus.getDefault().register(this);
+
         Intent myIntent = new Intent(this, LoadingActivity.class);
         this.startActivity(myIntent);
 
         ButterKnife.bind(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        EventBus.getDefault().register(this);
 
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION_CODE);
 
@@ -169,6 +169,8 @@ public class MainActivity extends AppCompatActivity{
                     } else {
                         //does
                         numSwipes = numSwipes + 1;
+
+                        Log.i("chadlike", url);
                     }
                 }
 
@@ -234,11 +236,12 @@ public class MainActivity extends AppCompatActivity{
 
     private void sendClick(WebView wv) {
         long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis() + 1;
+        long eventTime = SystemClock.uptimeMillis() + 10;
         float x = 700f;
         float y = webviewHeight;
         int metaState = 0;
 
+        //get ride of match screen
         MotionEvent down = MotionEvent.obtain(
                 downTime,
                 eventTime,
@@ -249,6 +252,28 @@ public class MainActivity extends AppCompatActivity{
         );
 
         wv.dispatchTouchEvent(down);
+
+        MotionEvent up = MotionEvent.obtain(
+                downTime,
+                eventTime,
+                MotionEvent.ACTION_UP,
+                x,
+                y,
+
+                metaState
+        );
+
+        //swipe gesture
+        MotionEvent down2 = MotionEvent.obtain(
+                downTime,
+                eventTime,
+                MotionEvent.ACTION_DOWN,
+                x,
+                y,
+                metaState
+        );
+
+        wv.dispatchTouchEvent(down2);
 
         MotionEvent move = MotionEvent.obtain(
                 downTime,
@@ -261,7 +286,7 @@ public class MainActivity extends AppCompatActivity{
 
         wv.dispatchTouchEvent(move);
 
-        MotionEvent up = MotionEvent.obtain(
+        MotionEvent up2 = MotionEvent.obtain(
                 downTime,
                 eventTime,
                 MotionEvent.ACTION_UP,
@@ -271,7 +296,7 @@ public class MainActivity extends AppCompatActivity{
                 metaState
         );
 
-        wv.dispatchTouchEvent(up);
+        wv.dispatchTouchEvent(up2);
     }
 
     @Override
