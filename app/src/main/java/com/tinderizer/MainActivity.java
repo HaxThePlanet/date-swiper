@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
+    private final String TOTAL_SWIPES_KEY = "SWIPES_KEY";
+
     WebView mWebview;
     Handler customHandler = new Handler();
     boolean go;
@@ -63,8 +65,16 @@ public class MainActivity extends AppCompatActivity {
     private String target_url_prefix = "https://tinder.com/app/recs";
     private WebView mWebviewPop;
     private AlertDialog builder;
-    private int minSpeed = 100;
-    private int maxSpeed = 2000;
+
+    private int slowMinSpeed = 1000;
+    private int slowMaxSpeed = 3000;
+
+    private int fastMinSpeed = 250;
+    private int fastMaxSpeed = 1500;
+
+    String deviceID;
+    EncryptedPreferences encryptedPreferences;
+
     //    private RewardedVideoAd mRewardedVideoAd;
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
@@ -72,7 +82,12 @@ public class MainActivity extends AppCompatActivity {
                 sendClick(mWebview);
             }
 
-            customHandler.postDelayed(this, Utils.getRandomNumber(minSpeed, maxSpeed));
+            if (isFastSwipeEnabled()) {
+                customHandler.postDelayed(this, Utils.getRandomNumber(fastMinSpeed, fastMaxSpeed));
+            } else {
+                customHandler.postDelayed(this, Utils.getRandomNumber(slowMinSpeed, slowMaxSpeed));
+            }
+
             EventBus.getDefault().post(new MessageEvents.SwipeEvent(numSwipes));
         }
     };
@@ -258,8 +273,8 @@ public class MainActivity extends AppCompatActivity {
 
     //setup shared prefs initially
     private void setupSharedPrefs() {
-        String deviceID = Utils.getDeviceID(this);
-        EncryptedPreferences encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
+        deviceID = Utils.getDeviceID(this);
+        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
         boolean isFirstRun = encryptedPreferences.getBoolean(FIRST_RUN_KEY, true);
 
         //first run?
@@ -271,6 +286,21 @@ public class MainActivity extends AppCompatActivity {
                     .putBoolean(FAST_SWIPE_KEY, false)
                     .apply();
         }
+    }
+
+    private int getSwipes() {
+        return encryptedPreferences.getInt(TOTAL_SWIPES_KEY, 0);
+    }
+
+    private void putSwipe(int swipeCount) {
+        //set default settings
+        encryptedPreferences.edit()
+                .putInt(TOTAL_SWIPES_KEY, swipeCount)
+                .apply();
+    }
+
+    private boolean isFastSwipeEnabled() {
+        return encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false);
     }
 
     private void loadRewardedVideoAd() {
