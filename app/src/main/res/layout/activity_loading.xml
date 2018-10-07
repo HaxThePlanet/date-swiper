@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/titleText2"
+        android:layout_below="@+id/welcomeText"
         android:gravity="center_vertical|center_horizontal"
         android:text="Keep Calm &amp; Don't Panic"
         android:textAlignment="center"
@@ -21,7 +21,7 @@
         android:textSize="18dp" />
 
     <TextView
-        android:id="@+id/titleText2"
+        android:id="@+id/welcomeText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

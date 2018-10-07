@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <RelativeLayout
         android:id="@+id/left_frame_layout"
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Tinder Swiper"
+            android:text="Date Swiper"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="24dp" />

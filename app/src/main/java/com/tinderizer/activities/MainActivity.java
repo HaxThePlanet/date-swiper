@@ -1,4 +1,4 @@
-package com.tinderizer;
+package com.tinderizer.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -11,13 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -26,10 +24,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
+import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
 import com.tinderizer.utils.Utils;
 
@@ -39,30 +37,33 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashSet;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_FINE_LOCATION_CODE = 0;
     private static String mGeolocationOrigin;
     private static GeolocationPermissions.Callback mGeolocationCallback;
     private static int numSwipes;
+
     private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
     private final String TOTAL_SWIPES_KEY = "SWIPES_KEY";
+    private final int REQUEST_FINE_LOCATION_CODE = 0;
 
-    WebView mWebview;
-    Handler customHandler = new Handler();
-    boolean go;
-    int webviewHeight;
-    boolean dashboardUp = false;
-    CookieManager cookieManager = CookieManager.getInstance();
-    HashSet likeHashMap = new HashSet();
-    private RelativeLayout mContainer;
-    private String url = "https://tinder.com/app/recs";
-    private String target_url_prefix = "https://tinder.com/app/recs";
+    @BindView(R.id.webview)
+    WebView webview;
+
+    private Handler customHandler = new Handler();
+    private boolean go;
+    private int webviewHeight;
+    private boolean dashboardUp = false;
+
+    private CookieManager cookieManager = CookieManager.getInstance();
+    private HashSet likeHashMap = new HashSet();
+
     private WebView mWebviewPop;
     private AlertDialog builder;
 
@@ -72,16 +73,15 @@ public class MainActivity extends AppCompatActivity {
     private int fastMinSpeed = 250;
     private int fastMaxSpeed = 1500;
 
-    String deviceID;
-    EncryptedPreferences encryptedPreferences;
+    private String deviceID;
+    private EncryptedPreferences encryptedPreferences;
 
     //    private RewardedVideoAd mRewardedVideoAd;
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go) {
-                sendClick(mWebview);
+                Utils.sendClick(webview, webviewHeight);
             }
-
             if (isFastSwipeEnabled()) {
                 customHandler.postDelayed(this, Utils.getRandomNumber(fastMinSpeed, fastMaxSpeed));
             } else {
@@ -139,60 +139,58 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //loading
-        Intent myIntent = new Intent(this, LoadingActivity.class);
-        this.startActivity(myIntent);
+        deviceID = Utils.getDeviceID(this);
+        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
 
-        setupSharedPrefs();
-
-        Fabric.with(this, new Crashlytics());
+        ButterKnife.bind(this);
 
         // Use an activity context to get the rewarded video instance.
 //        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
 //        mRewardedVideoAd.setRewardedVideoAdListener(this);
-
-
 //        loadRewardedVideoAd();
-
-
-        ButterKnife.bind(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION_CODE);
+        setupWebview();
 
-        mWebview = (WebView) findViewById(R.id.tinder_webview);
+        android.os.Handler customHandler = new android.os.Handler();
+        customHandler.postDelayed(updateTimerThread, 0);
+    }
 
-        WebSettings webSettings = mWebview.getSettings();
+    private void setupWebview() {
+        WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setSupportMultipleWindows(true);
         webSettings.setJavaScriptEnabled(true);
-        mWebview.getSettings().setSavePassword(true);
-        mWebview.getSettings().setSaveFormData(true);
-        mWebview.setWebViewClient(new UriWebViewClient());
-        mWebview.setWebChromeClient(new GeoWebChromeClient());
-        mWebview.getSettings().setSavePassword(true);
+        webview.getSettings().setSavePassword(true);
+        webview.getSettings().setSaveFormData(true);
+        webview.setWebViewClient(new UriWebViewClient());
+        webview.setWebChromeClient(new GeoWebChromeClient());
+        webview.getSettings().setSavePassword(true);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.setAcceptThirdPartyCookies(mWebview, true);
+            cookieManager.setAcceptThirdPartyCookies(webview, true);
         }
 
         cookieManager.setAcceptCookie(true);
 
-        mWebview.setWebViewClient(new WebViewClient() {
+        webview.setWebViewClient(new WebViewClient() {
             @Override
             public void onLoadResource(WebView view, String url) {
                 Log.i("chadtest", url);
 
+                EventBus.getDefault().post(new MessageEvents.CloseLoading());
+
+                //we're at like screen
                 if (url.contains("/recs/core")) {
+                    //close loading screen
+                    EventBus.getDefault().post(new MessageEvents.CloseLoading());
+
                     if (dashboardUp == false) {
                         dashboardUp = true;
-
-                        //close loading screen
-                        EventBus.getDefault().post(new MessageEvents.CloseLoading());
 
                         //show dashboard
                         Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
@@ -200,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                //like happened
                 if (url.contains("/like/")) {
                     if (!likeHashMap.contains(url)) {
                         likeHashMap.add(url);
@@ -211,81 +210,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                //login page
                 if (url.contains("buckets")) {
                     //close loading screen
                     EventBus.getDefault().post(new MessageEvents.CloseLoading());
                 }
             }
-
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                String host = Uri.parse(url).getHost();
-//                //Log.d("shouldOverrideUrlLoading", url);
-//                if (host.equals(target_url_prefix))
-//                {
-//                    // This is my web site, so do not override; let my WebView load
-//                    // the page
-////                    if(mWebviewPop!=null)
-////                    {
-////                        mWebviewPop.setVisibility(View.GONE);
-////                        mContainer.removeView(mWebviewPop);
-////                        mWebviewPop=null;
-////                    }
-//                    return false;
-//                }
-//
-//                if(host.equals("m.facebook.com") || host.equals("www.facebook.com"))
-//                {
-//                    if(mWebviewPop!=null) {
-//                        mWebviewPop.loadUrl("https://tinder.com/app/recs");
-//                    }
-//                    return false;
-//                }
-//                // Otherwise, the link is not for a page on my site, so launch
-//                // another Activity that handles URLs
-////                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-////                startActivity(intent);
-//
-//
-//
-//                return false;
-//            }
         });
 
-        mWebview.getSettings().setAllowContentAccess(true);
-        mWebview.getSettings().setDomStorageEnabled(true);
-        mWebview.getSettings().setAllowFileAccess(true);
-        mWebview.getSettings().setAllowFileAccessFromFileURLs(true);
-        mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        mWebview.getSettings().setAppCacheEnabled(true);
-        mWebview.getSettings().setDatabaseEnabled(true);
-        mWebview.getSettings().setJavaScriptEnabled(true);
-        mWebview.getSettings().setGeolocationEnabled(true);
-        mWebview.setWebChromeClient(new GeoWebChromeClient());
+        webview.getSettings().setAllowContentAccess(true);
+        webview.getSettings().setDomStorageEnabled(true);
+        webview.getSettings().setAllowFileAccess(true);
+        webview.getSettings().setAllowFileAccessFromFileURLs(true);
+        webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webview.getSettings().setAppCacheEnabled(true);
+        webview.getSettings().setDatabaseEnabled(true);
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.getSettings().setGeolocationEnabled(true);
+        webview.setWebChromeClient(new GeoWebChromeClient());
 
-        mWebview.loadUrl("https://www.tinder.com/app/recs");
-
+        webview.loadUrl(Utils.getRecsUrl());
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight() / 2;
 
-        android.os.Handler customHandler = new android.os.Handler();
-        customHandler.postDelayed(updateTimerThread, 0);
-    }
+        //not first run
+        encryptedPreferences.edit()
+                .putBoolean(FIRST_RUN_KEY, false)
+                .apply();
 
-    //setup shared prefs initially
-    private void setupSharedPrefs() {
-        deviceID = Utils.getDeviceID(this);
-        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
-        boolean isFirstRun = encryptedPreferences.getBoolean(FIRST_RUN_KEY, true);
-
-        //first run?
-        if (isFirstRun) {
-            //set default settings
-            encryptedPreferences.edit()
-                    .putBoolean(FIRST_RUN_KEY, false)
-                    .putBoolean(NOTIF_KEY, true)
-                    .putBoolean(FAST_SWIPE_KEY, false)
-                    .apply();
-        }
     }
 
     private int getSwipes() {
@@ -304,79 +255,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadRewardedVideoAd() {
-//        mRewardedVideoAd.loadAd("ca-app-pub-5336818452987335/9055464537",
-//                new AdRequest.Builder().build());
+        //mRewardedVideoAd.loadAd("ca-app-pub-5336818452987335/9055464537", new AdRequest.Builder().build());
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-
-    private void sendClick(WebView wv) {
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis() + 10;
-        float x = 700f;
-        float y = webviewHeight;
-        int metaState = 0;
-
-        //get ride of match screen
-        MotionEvent down = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_DOWN,
-                x,
-                y,
-                metaState
-        );
-
-        wv.dispatchTouchEvent(down);
-
-        MotionEvent up = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_UP,
-                x,
-                y,
-
-                metaState
-        );
-
-        //swipe gesture
-        MotionEvent down2 = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_DOWN,
-                x,
-                y,
-                metaState
-        );
-
-        wv.dispatchTouchEvent(down2);
-
-        MotionEvent move = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_MOVE,
-                1400,
-                y,
-                metaState
-        );
-
-        wv.dispatchTouchEvent(move);
-
-        MotionEvent up2 = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_UP,
-                1600,
-                y,
-
-                metaState
-        );
-
-        wv.dispatchTouchEvent(up2);
     }
 
     @Override
@@ -400,9 +284,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Pop the browser back stack or exit the activity
-        if (mWebview.canGoBack()) {
+        if (webview.canGoBack()) {
         } else {
-            mWebview.goBack();
+            webview.goBack();
             super.onBackPressed();
         }
     }
@@ -411,57 +295,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             String host = Uri.parse(url).getHost();
-            if (host.equals(target_url_prefix)) {
-                // This is my web site, so do not override; let my WebView load
-                // the page
-//                if(mWebviewPop!=null)
-//                {
-//                    mWebviewPop.setVisibility(View.GONE);
-//                    mContainer.removeView(mWebviewPop);
-//                    mWebviewPop=null;
-//                }
+            if (host.equals(Utils.getRecsUrl())) {
                 return false;
             }
 
             if (host.equals("m.facebook.com") || host.equals("www.facebook.com")) {
                 return false;
             }
-            // Otherwise, the link is not for a page on my site, so launch
-            // another Activity that handles URLs
-//            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//            startActivity(intent);
+
             return true;
         }
 
         @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler,
-                                       SslError error) {
-            Log.d("onReceivedSslError", "onReceivedSslError");
-            //super.onReceivedSslError(view, handler, error);
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            super.onReceivedSslError(view, handler, error);
         }
-
     }
 
     private class UriWebViewClient extends WebViewClient {
-//        @Override
-//        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//            String host = Uri.parse(url).getHost();
-//
-//            //looking for fb button load auth page press
-//            if (host.contains("oauth")) {
-//                //redir to normal fb auth page
-//
-//                view.loadUrl("https://www.tinder.com/app/recs");
-//                return true;
-//            }
-//
-//            return false;
-//        }
-//
-//        @Override
-//        public void onReceivedSslError(WebView view, SslErrorHandler handler,  SslError error) {
-//            Log.d("onReceivedSslError", "onReceivedSslError");
-//        }
     }
 
     /**
@@ -482,13 +333,6 @@ public class MainActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT).create();
             builder.setTitle("");
             builder.setView(mWebviewPop);
-//            builder.setButton("Close", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int id) {
-//                    mWebviewPop.destroy();
-//                    dialog.dismiss();
-//                }
-//            });
             builder.show();
             builder.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             CookieManager cookieManager = CookieManager.getInstance();

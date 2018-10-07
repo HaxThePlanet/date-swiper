@@ -1,4 +1,4 @@
-package com.tinderizer;
+package com.tinderizer.activities;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
+import com.tinderizer.R;
 import com.tinderizer.utils.Utils;
 
 import butterknife.BindView;
@@ -56,12 +57,12 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
-                        .setTitle("Change Tinder location?")
-                        .setMessage("Tinder Swiper will exit, you will need to change your location in the Tinder app")
+                        .setTitle("Change location?")
+                        .setMessage("Date Swiper will exit, you will need to change your location in the dating app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.tinder");
+                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(Utils.getComPackage());
                                 if (launchIntent != null) {
                                     startActivity(launchIntent);
 
@@ -70,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 } else {
                                     AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
                                     alert.setTitle("");
-                                    alert.setMessage("Please install the Tinder app");
+                                    alert.setMessage("Dating app not installed");
                                     alert.setPositiveButton("OK", null);
                                     alert.show();
                                 }
@@ -88,11 +89,11 @@ public class SettingsActivity extends AppCompatActivity {
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Are you sure?")
-                        .setMessage("Logout of Tinder Swiper? Tinder Swiper will close, you will need to restart the app")
+                        .setMessage("Logout of Date Swiper? Date Swiper will close, you will need to restart the app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                logoutTinder();
+                                logoutDatingApp();
                             }
                         })
                         .setNegativeButton("No", null)
@@ -122,7 +123,7 @@ public class SettingsActivity extends AppCompatActivity {
         fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
     }
 
-    private void logoutTinder() {
+    private void logoutDatingApp() {
         //schedule restart
 //        try {
 //            Intent mStartActivity = new Intent(SettingsActivity.this, MainActivity.class);

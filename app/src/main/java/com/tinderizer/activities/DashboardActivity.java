@@ -1,4 +1,4 @@
-package com.tinderizer;
+package com.tinderizer.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
 
 import org.greenrobot.eventbus.EventBus;
