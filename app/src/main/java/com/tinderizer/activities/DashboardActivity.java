@@ -80,6 +80,19 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        EventBus.getDefault().post(new MessageEvents.StopWebview());
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        EventBus.getDefault().post(new MessageEvents.StartWebview());
+        super.onResume();
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupFonts();
@@ -92,10 +105,10 @@ public class DashboardActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-        MobileAds.initialize(this, "ca-app-pub-5336818452987335/9751267400");
+        MobileAds.initialize(this, "ca-app-pub-5336818452987335/2176794052");
 
         mAdView = findViewById(R.id.adView);
-//      AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();
+//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 

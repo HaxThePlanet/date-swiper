@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Date Swiper"
+            android:text="Date Swiper "
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="24dp" />
@@ -118,7 +118,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             app:adSize="BANNER"
-            app:adUnitId="ca-app-pub-5336818452987335/9751267400"></com.google.android.gms.ads.AdView>
+            app:adUnitId="ca-app-pub-5336818452987335/2176794052"></com.google.android.gms.ads.AdView>
 
     </RelativeLayout>
 </RelativeLayout>

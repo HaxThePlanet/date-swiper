@@ -28,4 +28,14 @@ public class MessageEvents {
         public CloseLoading() {
         }
     }
+
+    public static class StopWebview {
+        public StopWebview() {
+        }
+    }
+
+    public static class StartWebview {
+        public StartWebview() {
+        }
+    }
 }

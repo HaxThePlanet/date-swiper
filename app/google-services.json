@@ -10,10 +10,18 @@
       "client_info": {
         "mobilesdk_app_id": "1:947093893255:android:15205eaac50e0e9a",
         "android_client_info": {
-          "package_name": "com.tinderizer"
+          "package_name": "com.swiper"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "947093893255-f5pvum4elerk3ue721umevjua9pu3140.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.swiper",
+            "certificate_hash": "d0207676c8333e0ee4ac63085c33efc367a98556"
+          }
+        },
         {
           "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
           "client_type": 3
@@ -29,8 +37,58 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      },
+      "admob_app_id": "ca-app-pub-5336818452987335~2377363785"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947093893255:android:e2c43ebbc46d35f4",
+        "android_client_info": {
+          "package_name": "com.tinderizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947093893255-h0gjimpl3cj3ak9rvstrms1do7fbdp5o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tinderizer",
+            "certificate_hash": "d0207676c8333e0ee4ac63085c33efc367a98556"
+          }
+        },
+        {
+          "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNrKu4NsXF42Mg7K86RMsbcN0lBs4mldY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

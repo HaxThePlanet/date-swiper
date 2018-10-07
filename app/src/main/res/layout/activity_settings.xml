@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Date Swiper"
+            android:text="Date Swiper "
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="24dp" />
@@ -98,6 +98,15 @@
         android:layout_alignTop="@+id/setting_two_layout"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
+
+    <TextView
+        android:id="@+id/versionTextview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/logoutButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="1.0.0.0" />
 
     <Button
         android:id="@+id/logoutButton"

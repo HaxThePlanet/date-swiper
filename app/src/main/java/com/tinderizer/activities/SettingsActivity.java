@@ -12,8 +12,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
+import com.tinderizer.BuildConfig;
 import com.tinderizer.R;
 import com.tinderizer.utils.Utils;
 
@@ -37,6 +39,9 @@ public class SettingsActivity extends AppCompatActivity {
     @BindView(R.id.fastSwipeSwitch)
     Switch fastSwipeSwitch;
 
+    @BindView(R.id.versionTextview)
+    TextView versionTextview;
+
     String deviceID;
     EncryptedPreferences encryptedPreferences;
 
@@ -50,6 +55,8 @@ public class SettingsActivity extends AppCompatActivity {
         encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
 
         setupSwitches();
+
+        versionTextview.setText(BuildConfig.VERSION_NAME);
 
         //change location
         changeLocation.setOnClickListener(new View.OnClickListener() {

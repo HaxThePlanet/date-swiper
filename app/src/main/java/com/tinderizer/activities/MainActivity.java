@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
 
-    //    private RewardedVideoAd mRewardedVideoAd;
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go) {
@@ -102,15 +101,23 @@ public class MainActivity extends AppCompatActivity {
         go = false;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.StopWebview event) {
+        webview.loadUrl("");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.StartWebview event) {
+        webview.loadUrl(Utils.getRecsUrl());
+    }
+
     @Override
     public void onPause() {
         super.onPause();
-//        mRewardedVideoAd.pause(this);
     }
 
     @Override
     public void onDestroy() {
-//        mRewardedVideoAd.destroy(this);
         super.onDestroy();
     }
 
@@ -143,11 +150,6 @@ public class MainActivity extends AppCompatActivity {
         encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
 
         ButterKnife.bind(this);
-
-        // Use an activity context to get the rewarded video instance.
-//        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-//        mRewardedVideoAd.setRewardedVideoAdListener(this);
-//        loadRewardedVideoAd();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -230,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         webview.setWebChromeClient(new GeoWebChromeClient());
 
         webview.loadUrl(Utils.getRecsUrl());
+
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight() / 2;
 
         //not first run
