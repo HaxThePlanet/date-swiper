@@ -31,11 +31,17 @@ public class DashboardActivity extends AppCompatActivity {
     @BindView(R.id.swipeCount)
     TextView swipeCount;
 
+    @BindView(R.id.adView)
+    AdView adView;
+
     @BindView(R.id.playPauseImg)
     ImageView playPauseImg;
 
     @BindView(R.id.bottom_layout)
     RelativeLayout bottomLayout;
+
+    @BindView(R.id.swipes_layout)
+    RelativeLayout swipesLayout;
 
     boolean isPlay = false;
 
@@ -169,6 +175,20 @@ public class DashboardActivity extends AppCompatActivity {
     public void onMessageEvent(MessageEvents.SwipeEvent event) {
         swipeCount.setText("Free Swipes Remaining " + String.valueOf(100 - event.count));
         swipeProgress.setProgress(100 - event.count);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.AppNotPurchased event) {
+        swipeCount.setVisibility(View.VISIBLE);
+        swipeProgress.setVisibility(View.VISIBLE);
+        adView.setVisibility(View.VISIBLE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.AppPurchased event) {
+        swipeCount.setVisibility(View.INVISIBLE);
+        swipeProgress.setVisibility(View.INVISIBLE);
+        adView.setVisibility(View.INVISIBLE);
     }
 }
 

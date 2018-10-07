@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -23,13 +25,19 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.BuildConfig;
 import com.tinderizer.R;
+import com.tinderizer.events.MessageEvents;
 import com.tinderizer.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnTouch;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
@@ -44,8 +52,14 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
     @BindView(R.id.logoutButton)
     Button logoutButton;
 
+    @BindView(R.id.upgradeButton)
+    Button upgradeButton;
+
     @BindView(R.id.notifSwitch)
     Switch notifSwitch;
+
+    @BindView(R.id.buy_layout)
+    LinearLayout buyLayout;
 
     @BindView(R.id.fastSwipeSwitch)
     Switch fastSwipeSwitch;
@@ -151,6 +165,37 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
             }
         });
 
+        fastSwipeSwitch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (!Utils.isPurchased()) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                        builder
+                                .setTitle("Upgrade")
+                                .setMessage("Upgrade to paid version for faster swiping")
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                    }
+
+                    //block
+                    return true;
+                } else {
+                    //allow
+                    return false;
+                }
+            }
+        });
+
         //setup billing
         mBillingClient = BillingClient.newBuilder(SettingsActivity.this).setListener(this).build();
         mBillingClient.startConnection(new BillingClientStateListener() {
@@ -161,8 +206,6 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
                     Log.i("chad", "");
 
                     queryPurchases();
-
-                    initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
                 }
             }
 
@@ -173,6 +216,13 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
                 Log.i("chad", "");
             }
         });
+
+        upgradeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+            }
+        });
     }
 
     /**
@@ -181,8 +231,7 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
     private void onQueryPurchasesFinished(Purchase.PurchasesResult result) {
         // Have we been disposed of in the meantime? If so, or bad result code, then quit
         if (mBillingClient == null || result.getResponseCode() != BillingClient.BillingResponse.OK) {
-            Log.w("", "Billing client was null or result code (" + result.getResponseCode()
-                    + ") was bad - quitting");
+            Log.w("", "Billing client was null or result code (" + result.getResponseCode() + ") was bad - quitting");
             return;
         }
 
@@ -306,6 +355,9 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
             if (purchases != null) {
                 for (Purchase purchase : purchases) {
                     handlePurchase(purchase);
+
+                    //remove for more
+                    break;
                 }
             }
         } else if (resultCode == BillingClient.BillingResponse.USER_CANCELED) {
@@ -327,10 +379,17 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
     private void handlePurchase(Purchase purchase) {
         if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
             Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
+
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
+
             return;
         }
 
         Log.d(TAG, "Got a verified purchase: " + purchase);
+
+        EventBus.getDefault().post(new MessageEvents.AppPurchased());
+        Utils.setPurchased(true);
 
         mPurchases.add(purchase);
     }
@@ -359,6 +418,16 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
         return true;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.AppNotPurchased event) {
+        buyLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.AppPurchased event) {
+        buyLayout.setVisibility(View.INVISIBLE);
+    }
+
     private void setupSwitches() {
         notifSwitch.setChecked(encryptedPreferences.getBoolean(NOTIF_KEY, true));
         fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
@@ -382,18 +451,19 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
         System.exit(1);
     }
 
+
     @Override
     public void onStop() {
         super.onStop();
-//        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-//        if (!EventBus.getDefault().isRegistered(this)) {
-//            EventBus.getDefault().register(this);
-//        }
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override

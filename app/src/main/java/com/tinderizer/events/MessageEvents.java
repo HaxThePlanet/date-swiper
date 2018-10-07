@@ -38,4 +38,14 @@ public class MessageEvents {
         public StartWebview() {
         }
     }
+
+    public static class AppPurchased {
+        public AppPurchased() {
+        }
+    }
+
+    public static class AppNotPurchased {
+        public AppNotPurchased() {
+        }
+    }
 }

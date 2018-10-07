@@ -13,6 +13,8 @@ import android.webkit.WebView;
 import java.util.Random;
 
 public class Utils {
+    private static boolean isPurch;
+
     public static int getRandomNumber(int min, int max) {
         return (new Random()).nextInt((max - min) + 1) + min;
     }
@@ -61,6 +63,14 @@ public class Utils {
         }
 
         return "";
+    }
+
+    public static boolean isPurchased() {
+        return isPurch;
+    }
+
+    public static void setPurchased(boolean purch) {
+        isPurch = purch;
     }
 
     public static String getDeviceID(Context ctx) {
