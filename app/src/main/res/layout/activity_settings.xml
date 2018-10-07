@@ -5,14 +5,15 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:gravity="bottom">
 
     <RelativeLayout
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="false"
         android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
         android:background="@color/bg_grey">
 
         <TextView
@@ -31,8 +32,8 @@
         android:id="@+id/setting_one_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/top_layout"
+        android:layout_alignParentStart="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="bottom"
@@ -58,8 +59,8 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_one_layout"
+        android:layout_alignParentStart="true"
         android:background="@color/bg_grey" />
 
     <LinearLayout
@@ -94,35 +95,93 @@
         android:id="@+id/view"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/setting_two_layout"
+        android:layout_alignParentStart="true"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
 
-    <TextView
-        android:id="@+id/versionTextview"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buy_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/logoutButton"
-        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/version_layout"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:text="1.0.0.0" />
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="100dp"
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Faster Swipes"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="No Ads"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Unlimited Swipes"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/upgradeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upgrade" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/version_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:text="Logout" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Logout" />
+
+        <TextView
+            android:id="@+id/versionTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="1.0.0.0" />
+    </LinearLayout>
 
     <View
         android:id="@+id/view2"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_two_layout"
+        android:layout_alignParentStart="true"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
 
@@ -130,8 +189,8 @@
         android:id="@+id/setting_two_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_three_layout"
+        android:layout_alignParentStart="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical|center_horizontal">
