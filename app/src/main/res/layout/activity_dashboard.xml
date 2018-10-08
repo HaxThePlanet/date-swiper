@@ -43,18 +43,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
-            android:text="Swipes Remaining: 75" />
+            android:text="Swipes Remaining: 100" />
 
         <ProgressBar
             android:id="@+id/swipeProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
             android:max="100"
             android:min="0"
-            android:progress="75"
+            android:progress="100"
             android:progressTint="@android:color/white" />
     </RelativeLayout>
 

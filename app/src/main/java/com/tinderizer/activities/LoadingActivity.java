@@ -17,13 +17,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class LoadingActivity extends AppCompatActivity {
-    private String deviceID;
-    private EncryptedPreferences encryptedPreferences;
-
     private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
     private final String TOTAL_SWIPES_KEY = "SWIPES_KEY";
+    private String deviceID;
+    private EncryptedPreferences encryptedPreferences;
 
     @Override
     protected void attachBaseContext(Context newBase) {

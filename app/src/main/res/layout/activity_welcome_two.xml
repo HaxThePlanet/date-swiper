@@ -51,15 +51,6 @@
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false">
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/welcomeText2"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            app:srcCompat="@drawable/ic_arrow_downward_white_24dp" />
-
         <TextView
             android:id="@+id/welcomeText5"
             android:layout_width="match_parent"

@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class Utils {
     private static boolean isPurch;
+    private static boolean outLikes;
 
     public static int getRandomNumber(int min, int max) {
         return (new Random()).nextInt((max - min) + 1) + min;
@@ -45,7 +46,7 @@ public class Utils {
         String ps2 = "aHR0cHM6Ly93d3cudGluZGVyLmNvbS9hcHAvcmVjcw==";
 
         try {
-            byte[] tmp2 = Base64.decode(ps2,0);
+            byte[] tmp2 = Base64.decode(ps2, 0);
             return new String(tmp2, "UTF-8");
         } catch (Exception ex) {
         }
@@ -57,12 +58,20 @@ public class Utils {
         String ps2 = "Y29tLnRpbmRlcg==";
 
         try {
-            byte[] tmp2 = Base64.decode(ps2,0);
+            byte[] tmp2 = Base64.decode(ps2, 0);
             return new String(tmp2, "UTF-8");
         } catch (Exception ex) {
         }
 
         return "";
+    }
+
+    public static boolean isOutOfLikes() {
+        return outLikes;
+    }
+
+    public static void setOutOfLikes(boolean likes) {
+        outLikes = likes;
     }
 
     public static boolean isPurchased() {
@@ -78,7 +87,7 @@ public class Utils {
     }
 
     public static void sendClick(WebView wv, float webviewHeight) {
-        long downTime = SystemClock.uptimeMillis();
+        long downTime = SystemClock.uptimeMillis() ;
         long eventTime = SystemClock.uptimeMillis() + 10;
         float x = 700f;
         float y = webviewHeight;
@@ -105,6 +114,9 @@ public class Utils {
 
                 metaState
         );
+
+        wv.dispatchTouchEvent(up);
+
 
         //swipe gesture
         MotionEvent down2 = MotionEvent.obtain(

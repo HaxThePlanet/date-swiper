@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -11,12 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -25,7 +26,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -41,7 +41,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -51,8 +53,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
 
+    // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
+    public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
+    private static final int freeLikesCount = 100;
+    private static final String TAG = "BillingManager";
+    private static final String BASE_64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlXMysh/BZaZV0trE7UU+Vm5mrkJssmrBYfCHnpE9rQELfwBcwhQuIzSpTAENJgVCU+wK5h2J0ffG7v8GMfRMJ/xiEFoG73EMNSkuKVszpEuGI+UIwQQNg537xPFBWcDWrm43RIP0/v+HPCYd9p4oWSmepH0Gu9hiGQF+XBPY0xYdp2WohAuSJAXjiQmxjU8QhYZKJ9fs5LVxZwsM4MP9W7RTiLvcCETBt3/O/RRmu92pbZ2GkmLbFmDhifYXK/mpNbSSIplrbpSi2XnhyUYMwNiUUh3XCvsvz6fk2W2CdTyIWDTjiPHKkzZbUyQ5OXOOyoC5madiUs1TR2BFB5elLwIDAQAB";
     private static String mGeolocationOrigin;
     private static GeolocationPermissions.Callback mGeolocationCallback;
     private static int numSwipes;
@@ -61,10 +68,11 @@ public class MainActivity extends AppCompatActivity {
     private final String NOTIF_KEY = "NOTIF_KEY";
     private final String TOTAL_SWIPES_KEY = "SWIPES_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;
-
+    private final List<Purchase> mPurchases = new ArrayList<>();
     @BindView(R.id.webview)
     WebView webview;
-
+    SharedPreferences preferences;
+    SharedPreferences sharedPref;
     private Handler customHandler = new Handler();
     private boolean go;
     private int webviewHeight;
@@ -72,29 +80,41 @@ public class MainActivity extends AppCompatActivity {
     private CookieManager cookieManager = CookieManager.getInstance();
     private HashSet likeHashMap = new HashSet();
     private WebView mWebviewPop;
-    private AlertDialog builder;
+    private AlertDialog popWindowBuilder;
     private int slowMinSpeed = 1000;
     private int slowMaxSpeed = 3000;
     private int fastMinSpeed = 250;
     private int fastMaxSpeed = 1500;
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
-
+    /**
+     * A reference to BillingClient
+     **/
+    private BillingClient mBillingClient;
+    private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
+    /**
+     * True if billing service is connected now.
+     */
+    private boolean mIsServiceConnected;
 
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
-            if (go) {
+            if (go && !Utils.isOutOfLikes()) {
                 Utils.sendClick(webview, webviewHeight);
             }
+
             if (isFastSwipeEnabled()) {
                 customHandler.postDelayed(this, Utils.getRandomNumber(fastMinSpeed, fastMaxSpeed));
             } else {
                 customHandler.postDelayed(this, Utils.getRandomNumber(slowMinSpeed, slowMaxSpeed));
             }
-
-            EventBus.getDefault().post(new MessageEvents.SwipeEvent(numSwipes));
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvents.CheckBilling event) {
+        queryPurchases();
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.PlayEvent event) {
@@ -114,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.StartWebview event) {
         webview.loadUrl(Utils.getRecsUrl());
+    }
+
+    private int getTotalSwipes() {
+        return preferences.getInt("total_swipes", 0);
     }
 
     @Override
@@ -151,16 +175,255 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        deviceID = Utils.getDeviceID(this);
-        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
-
         ButterKnife.bind(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        deviceID = Utils.getDeviceID(this);
+        encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
 
+        //get todays date
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateTime = mdformat.format(calendar.getTime());
+
+        //read date key + count
+//      numSwipes = encryptedPreferences.getInt(mdformat.format(calendar.getTime()), 0);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        numSwipes = preferences.getInt(dateTime, 0);
+
+        if (numSwipes == freeLikesCount) {
+            //set out of likes
+            Utils.setOutOfLikes(true);
+        }
 
         setupWebview();
+
+        //setup billing
+        mBillingClient = BillingClient.newBuilder(MainActivity.this).setListener(this).build();
+        mBillingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(@BillingClient.BillingResponse int billingResponseCode) {
+                if (billingResponseCode == BillingClient.BillingResponse.OK) {
+                    // The billing client is ready. You can query purchases here.
+                    Log.i("chad", "");
+
+                    queryPurchases();
+                }
+            }
+
+            @Override
+            public void onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+                Log.i("chad", "");
+            }
+        });
+
+        android.os.Handler customHandler = new android.os.Handler();
+        customHandler.postDelayed(updateTimerThread, 0);
+
+
+    }
+
+    /**
+     * Query purchases across various use cases and deliver the result in a formalized way through
+     * a listener
+     */
+    public void queryPurchases() {
+        Runnable queryToExecute = new Runnable() {
+            @Override
+            public void run() {
+                long time = System.currentTimeMillis();
+                Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(INAPP);
+                Log.i(TAG, "Querying purchases elapsed time: " + (System.currentTimeMillis() - time) + "ms");
+                // If there are subscriptions supported, we add subscription rows as well
+                if (areSubscriptionsSupported()) {
+                    Purchase.PurchasesResult subscriptionResult = mBillingClient.queryPurchases(BillingClient.SkuType.SUBS);
+                    Log.i(TAG, "Querying purchases and subscriptions elapsed time: " + (System.currentTimeMillis() - time) + "ms");
+                    Log.i(TAG, "Querying subscriptions result code: " + subscriptionResult.getResponseCode() + " res: " + subscriptionResult.getPurchasesList().size());
+
+                    if (subscriptionResult.getResponseCode() == BillingClient.BillingResponse.OK) {
+                        purchasesResult.getPurchasesList().addAll(subscriptionResult.getPurchasesList());
+                    } else {
+                        Log.e(TAG, "Got an error response trying to query subscription purchases");
+                    }
+                } else if (purchasesResult.getResponseCode() == BillingClient.BillingResponse.OK) {
+                    Log.i(TAG, "Skipped subscription purchases query since they are not supported");
+                } else {
+                    Log.w(TAG, "queryPurchases() got an error response code: " + purchasesResult.getResponseCode());
+                }
+                onQueryPurchasesFinished(purchasesResult);
+            }
+        };
+
+        executeServiceRequest(queryToExecute);
+    }
+
+    /**
+     * Checks if subscriptions are supported for current client
+     * <p>Note: This method does not automatically retry for RESULT_SERVICE_DISCONNECTED.
+     * It is only used in unit tests and after queryPurchases execution, which already has
+     * a retry-mechanism implemented.
+     * </p>
+     */
+    public boolean areSubscriptionsSupported() {
+        int responseCode = mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS);
+        if (responseCode != BillingClient.BillingResponse.OK) {
+            Log.w(TAG, "areSubscriptionsSupported() got an error response: " + responseCode);
+        }
+        return responseCode == BillingClient.BillingResponse.OK;
+    }
+
+    /**
+     * Handle a result from querying of purchases and report an updated list to the listener
+     */
+    private void onQueryPurchasesFinished(Purchase.PurchasesResult result) {
+        // Have we been disposed of in the meantime? If so, or bad result code, then quit
+        if (mBillingClient == null || result.getResponseCode() != BillingClient.BillingResponse.OK) {
+            Log.w("", "Billing client was null or result code (" + result.getResponseCode() + ") was bad - quitting");
+            return;
+        }
+
+        Log.d(TAG, "Query inventory was successful.");
+
+        // Update the UI and purchases inventory with new list of purchases
+        mPurchases.clear();
+        onPurchasesUpdated(BillingClient.BillingResponse.OK, result.getPurchasesList());
+    }
+
+    /**
+     * Start a purchase flow
+     */
+    public void initiatePurchaseFlow(final String skuId, final @BillingClient.SkuType String billingType) {
+        initiatePurchaseFlow(skuId, null, billingType);
+    }
+
+    /**
+     * Start a purchase or subscription replace flow
+     */
+    public void initiatePurchaseFlow(final String skuId, final ArrayList<String> oldSkus, final @BillingClient.SkuType String billingType) {
+        Runnable purchaseFlowRequest = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("", "Launching in-app purchase flow. Replace old SKU? " + (oldSkus != null));
+                BillingFlowParams purchaseParams = BillingFlowParams.newBuilder().setSku(skuId).setType(billingType).setOldSkus(oldSkus).build();
+                mBillingClient.launchBillingFlow(MainActivity.this, purchaseParams);
+            }
+        };
+
+        executeServiceRequest(purchaseFlowRequest);
+    }
+
+    public void startServiceConnection(final Runnable executeOnSuccess) {
+        mBillingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(@BillingClient.BillingResponse int billingResponseCode) {
+                Log.d("", "Setup finished. Response code: " + billingResponseCode);
+
+                if (billingResponseCode == BillingClient.BillingResponse.OK) {
+                    mIsServiceConnected = true;
+                    if (executeOnSuccess != null) {
+                        executeOnSuccess.run();
+                    }
+                }
+                mBillingClientResponseCode = billingResponseCode;
+            }
+
+            @Override
+            public void onBillingServiceDisconnected() {
+                mIsServiceConnected = false;
+            }
+        });
+    }
+
+    private void executeServiceRequest(Runnable runnable) {
+        if (mIsServiceConnected) {
+            runnable.run();
+        } else {
+            // If billing service was disconnected, we try to reconnect 1 time.
+            // (feel free to introduce your retry policy here).
+            startServiceConnection(runnable);
+        }
+    }
+
+    /**
+     * Handle a callback that purchases were updated from the Billing library
+     */
+    @Override
+    public void onPurchasesUpdated(int resultCode, List<Purchase> purchases) {
+        if (resultCode == BillingClient.BillingResponse.OK) {
+            if (purchases != null) {
+                for (Purchase purchase : purchases) {
+                    handlePurchase(purchase);
+                    //remove for more
+                    break;
+                }
+            } else {
+                EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+                Utils.setPurchased(false);
+            }
+        } else if (resultCode == BillingClient.BillingResponse.USER_CANCELED) {
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
+            Log.i("chadtest", "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
+        } else {
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
+            Log.w("chadtest", "onPurchasesUpdated() got unknown resultCode: " + resultCode);
+        }
+    }
+
+    /**
+     * Handles the purchase
+     * <p>Note: Notice that for each purchase, we check if signature is valid on the client.
+     * It's recommended to move this check into your backend.
+     * See {@link Security#verifyPurchase(String, String, String)}
+     * </p>
+     *
+     * @param purchase Purchase to be handled
+     */
+    private void handlePurchase(Purchase purchase) {
+        if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
+            Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
+
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
+
+            return;
+        }
+
+        Log.d(TAG, "Got a verified purchase: " + purchase);
+
+        EventBus.getDefault().post(new MessageEvents.AppPurchased());
+        Utils.setPurchased(true);
+
+        mPurchases.add(purchase);
+    }
+
+    /**
+     * Verifies that the purchase was signed correctly for this developer's public key.
+     * <p>Note: It's strongly recommended to perform such check on your backend since hackers can
+     * replace this method with "constant true" if they decompile/rebuild your app.
+     * </p>
+     */
+    private boolean verifyValidSignature(String signedData, String signature) {
+        // Some sanity checks to see if the developer (that's you!) really followed the
+        // instructions to run this sample (don't put these checks on your app!)
+        if (BASE_64_ENCODED_PUBLIC_KEY.contains("CONSTRUCT_YOUR")) {
+            throw new RuntimeException("Please update your app's public key at: "
+                    + "BASE_64_ENCODED_PUBLIC_KEY");
+        }
+
+//        try {
+////            return Security.verifyPurchase(BASE_64_ENCODED_PUBLIC_KEY, signedData, signature);
+//        } catch (IOException e) {
+//            Log.e(TAG, "Got an exception trying to validate a purchase: " + e);
+//            return false;
+//        }
+
+        return true;
     }
 
     private void setupWebview() {
@@ -211,6 +474,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         //does
                         numSwipes = numSwipes + 1;
+                        EventBus.getDefault().post(new MessageEvents.SwipeEvent(numSwipes));
 
                         Log.i("chadlike", url);
                     }
@@ -234,27 +498,8 @@ public class MainActivity extends AppCompatActivity {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setGeolocationEnabled(true);
         webview.setWebChromeClient(new GeoWebChromeClient());
-
         webview.loadUrl(Utils.getRecsUrl());
-
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight() / 2;
-
-        //not first run
-        encryptedPreferences.edit()
-                .putBoolean(FIRST_RUN_KEY, false)
-                .apply();
-
-    }
-
-    private int getSwipes() {
-        return encryptedPreferences.getInt(TOTAL_SWIPES_KEY, 0);
-    }
-
-    private void putSwipe(int swipeCount) {
-        //set default settings
-        encryptedPreferences.edit()
-                .putInt(TOTAL_SWIPES_KEY, swipeCount)
-                .apply();
     }
 
     private boolean isFastSwipeEnabled() {
@@ -337,11 +582,11 @@ public class MainActivity extends AppCompatActivity {
             mWebviewPop.getSettings().setJavaScriptEnabled(true);
             mWebviewPop.getSettings().setSavePassword(true);
             mWebviewPop.getSettings().setSaveFormData(true);
-            builder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT).create();
-            builder.setTitle("");
-            builder.setView(mWebviewPop);
-            builder.show();
-            builder.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+            popWindowBuilder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT).create();
+            popWindowBuilder.setTitle("");
+            popWindowBuilder.setView(mWebviewPop);
+            popWindowBuilder.show();
+            popWindowBuilder.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -360,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
             }
             try {
-                builder.dismiss();
+                popWindowBuilder.dismiss();
             } catch (Exception e) {
             }
         }

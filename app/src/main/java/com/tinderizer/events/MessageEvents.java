@@ -48,4 +48,9 @@ public class MessageEvents {
         public AppNotPurchased() {
         }
     }
+
+    public static class CheckBilling {
+        public CheckBilling() {
+        }
+    }
 }

@@ -8,11 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.webkit.GeolocationPermissions;
 import android.widget.Button;
 
+import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
+import com.tinderizer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,13 +24,12 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WelcomeTwo extends AppCompatActivity {
+    private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
+    private final int REQUEST_FINE_LOCATION_CODE = 0;
     @BindView(R.id.nextTwoButton)
     Button nextTwoButton;
-
-    private final int REQUEST_FINE_LOCATION_CODE = 0;
-
-    private static String mGeolocationOrigin;
-    private static GeolocationPermissions.Callback mGeolocationCallback;
+    private String deviceID;
+    private EncryptedPreferences encryptedPreferences;
 
     @Override
     public void onStop() {
@@ -77,6 +77,14 @@ public class WelcomeTwo extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_FINE_LOCATION_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    deviceID = Utils.getDeviceID(this);
+                    encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
+
+                    //not first run
+                    encryptedPreferences.edit()
+                            .putBoolean(FIRST_RUN_KEY, false)
+                            .apply();
+
                     Intent myIntent = new Intent(WelcomeTwo.this, MainActivity.class);
                     startActivity(myIntent);
 

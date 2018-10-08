@@ -37,54 +37,51 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnTouch;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
 
-public class SettingsActivity extends AppCompatActivity  implements PurchasesUpdatedListener {
+public class SettingsActivity extends AppCompatActivity implements PurchasesUpdatedListener {
+    // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
+    public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
+    private static final String TAG = "BillingManager";
+    private static final String BASE_64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlXMysh/BZaZV0trE7UU+Vm5mrkJssmrBYfCHnpE9rQELfwBcwhQuIzSpTAENJgVCU+wK5h2J0ffG7v8GMfRMJ/xiEFoG73EMNSkuKVszpEuGI+UIwQQNg537xPFBWcDWrm43RIP0/v+HPCYd9p4oWSmepH0Gu9hiGQF+XBPY0xYdp2WohAuSJAXjiQmxjU8QhYZKJ9fs5LVxZwsM4MP9W7RTiLvcCETBt3/O/RRmu92pbZ2GkmLbFmDhifYXK/mpNbSSIplrbpSi2XnhyUYMwNiUUh3XCvsvz6fk2W2CdTyIWDTjiPHKkzZbUyQ5OXOOyoC5madiUs1TR2BFB5elLwIDAQAB";
+    private static boolean launchPurchase;
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
-
+    private final List<Purchase> mPurchases = new ArrayList<>();
     @BindView(R.id.changeLocation)
     ImageButton changeLocation;
-
     @BindView(R.id.logoutButton)
     Button logoutButton;
-
     @BindView(R.id.upgradeButton)
     Button upgradeButton;
-
     @BindView(R.id.notifSwitch)
     Switch notifSwitch;
-
     @BindView(R.id.buy_layout)
     LinearLayout buyLayout;
-
     @BindView(R.id.fastSwipeSwitch)
     Switch fastSwipeSwitch;
-
     @BindView(R.id.versionTextview)
     TextView versionTextview;
-
     String deviceID;
     EncryptedPreferences encryptedPreferences;
-
     /**
      * A reference to BillingClient
      **/
     private BillingClient mBillingClient;
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
-    // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
-    public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
-    private static final String TAG = "BillingManager";
-    private static final String BASE_64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlXMysh/BZaZV0trE7UU+Vm5mrkJssmrBYfCHnpE9rQELfwBcwhQuIzSpTAENJgVCU+wK5h2J0ffG7v8GMfRMJ/xiEFoG73EMNSkuKVszpEuGI+UIwQQNg537xPFBWcDWrm43RIP0/v+HPCYd9p4oWSmepH0Gu9hiGQF+XBPY0xYdp2WohAuSJAXjiQmxjU8QhYZKJ9fs5LVxZwsM4MP9W7RTiLvcCETBt3/O/RRmu92pbZ2GkmLbFmDhifYXK/mpNbSSIplrbpSi2XnhyUYMwNiUUh3XCvsvz6fk2W2CdTyIWDTjiPHKkzZbUyQ5OXOOyoC5madiUs1TR2BFB5elLwIDAQAB";
-    private final List<Purchase> mPurchases = new ArrayList<>();
-
     /**
      * True if billing service is connected now.
      */
     private boolean mIsServiceConnected;
+
+    @Override
+    public void onBackPressed() {
+        EventBus.getDefault().post(new MessageEvents.CheckBilling());
+
+        super.onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +203,9 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
                     Log.i("chad", "");
 
                     queryPurchases();
+
+                    if (launchPurchase)
+                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
                 }
             }
 
@@ -223,6 +223,22 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
                 initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
             }
         });
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String upgrade = intent.getStringExtra("open_upgrade");
+            if (upgrade != null && upgrade.equals("open_upgrade")) {
+                launchPurchase = true;
+            } else {
+                launchPurchase = false;
+            }
+        }
+
+        if (Utils.isPurchased()) {
+            buyLayout.setVisibility(View.INVISIBLE);
+        } else {
+            buyLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -355,14 +371,20 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
             if (purchases != null) {
                 for (Purchase purchase : purchases) {
                     handlePurchase(purchase);
-
                     //remove for more
                     break;
                 }
+            } else {
+                EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+                Utils.setPurchased(false);
             }
         } else if (resultCode == BillingClient.BillingResponse.USER_CANCELED) {
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
             Log.i("chadtest", "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
         } else {
+            EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
+            Utils.setPurchased(false);
             Log.w("chadtest", "onPurchasesUpdated() got unknown resultCode: " + resultCode);
         }
     }
@@ -387,6 +409,24 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
         }
 
         Log.d(TAG, "Got a verified purchase: " + purchase);
+
+//        //restart app for state change?
+//        if (!Utils.isPurchased()) {
+//            android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+//            builder
+//                    .setTitle("Thank You!")
+//                    .setMessage("Thanks for purchasing Date Swiper, restarting app now to enable features")
+//                    .setIcon(android.R.drawable.ic_dialog_info)
+//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            //restart
+//                            Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName());
+//                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            startActivity(i);
+//                        }
+//                    })
+//                    .show();
+//        }
 
         EventBus.getDefault().post(new MessageEvents.AppPurchased());
         Utils.setPurchased(true);
@@ -475,6 +515,5 @@ public class SettingsActivity extends AppCompatActivity  implements PurchasesUpd
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
-
 }
 
