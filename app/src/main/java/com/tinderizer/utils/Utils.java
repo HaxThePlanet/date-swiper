@@ -1,7 +1,6 @@
 package com.tinderizer.utils;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Base64;
@@ -13,25 +12,33 @@ import android.webkit.WebView;
 import java.util.Random;
 
 public class Utils {
+    private static final String RECS_URL_BASE64 = "aHR0cHM6Ly93d3cudGluZGVyLmNvbS9hcHAvcmVjcw==";
+    private static final String COM_PACKAGE_BASE64 = "Y29tLnRpbmRlcg==";
+    private static final String ENCODING_TYPE = "UTF-8";
     private static boolean isPurch;
     private static boolean outLikes;
+    private static long lastSuccessRecTime;
+    private static long FORCE_REFRESH_WEBVIEW_MILLISECONDS = 60000;
 
     public static int getRandomNumber(int min, int max) {
         return (new Random()).nextInt((max - min) + 1) + min;
     }
 
-    @SuppressWarnings("deprecation")
     public static void killLoginSession(WebView wv, Context ctx) {
-        //clear cache
-        wv.clearCache(true);
-        wv.clearHistory();
+        try {
+            //clear cache
+            wv.clearCache(true);
+            wv.clearHistory();
+        } catch (Exception ex) {
+        }
 
-        //kill cookies
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-
+        try {
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-//        } else {
+        } catch (Exception ex) {
+        }
+
+        try {
             CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(ctx);
             cookieSyncMngr.startSync();
             CookieManager cookieManager = CookieManager.getInstance();
@@ -39,15 +46,14 @@ public class Utils {
             cookieManager.removeSessionCookie();
             cookieSyncMngr.stopSync();
             cookieSyncMngr.sync();
+        } catch (Exception ex) {
         }
     }
 
     public static String getRecsUrl() {
-        String ps2 = "aHR0cHM6Ly93d3cudGluZGVyLmNvbS9hcHAvcmVjcw==";
-
         try {
-            byte[] tmp2 = Base64.decode(ps2, 0);
-            return new String(tmp2, "UTF-8");
+            byte[] tmp2 = Base64.decode(RECS_URL_BASE64, 0);
+            return new String(tmp2, ENCODING_TYPE);
         } catch (Exception ex) {
         }
 
@@ -55,11 +61,9 @@ public class Utils {
     }
 
     public static String getComPackage() {
-        String ps2 = "Y29tLnRpbmRlcg==";
-
         try {
-            byte[] tmp2 = Base64.decode(ps2, 0);
-            return new String(tmp2, "UTF-8");
+            byte[] tmp2 = Base64.decode(COM_PACKAGE_BASE64, 0);
+            return new String(tmp2, ENCODING_TYPE);
         } catch (Exception ex) {
         }
 
@@ -68,6 +72,21 @@ public class Utils {
 
     public static boolean isOutOfLikes() {
         return outLikes;
+    }
+
+    public static boolean shouldRefreshWebview() {
+        if (lastSuccessRecTime == 0) return false;
+
+        if (SystemClock.uptimeMillis() - lastSuccessRecTime >= FORCE_REFRESH_WEBVIEW_MILLISECONDS) {
+            //refresh
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void setSwipeTime(long time) {
+        lastSuccessRecTime = time;
     }
 
     public static void setOutOfLikes(boolean likes) {
@@ -86,71 +105,31 @@ public class Utils {
         return Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    public static void sendClick(WebView wv, float webviewHeight) {
-        long downTime = SystemClock.uptimeMillis() ;
+    public static void sendWebviewTouchSwipe(WebView wv, float webviewHeight, float webviewWidth) {
+        //send swipe
+        sendSwipeGesture(wv, webviewHeight, webviewWidth);
+
+        //send keep swiping
+        sendKeepSwipingGesture(wv, webviewHeight, webviewWidth);
+    }
+
+    //keep swiping button is wv h - 65%
+    private static void sendKeepSwipingGesture(WebView wv, float webviewHeight, float webviewWidth) {
+        long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 10;
-        float x = 700f;
-        float y = webviewHeight;
-        int metaState = 0;
 
-        //get ride of match screen
-        MotionEvent down = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_DOWN,
-                x,
-                y,
-                metaState
-        );
+        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, webviewWidth / 2, webviewHeight * 0.59f, 0));
+        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, webviewWidth / 2, webviewHeight * 0.59f, 0));
+    }
 
-        wv.dispatchTouchEvent(down);
+    //swipe event
+    //down -> move -> up
+    private static void sendSwipeGesture(WebView wv, float webviewHeight, float webviewWidth) {
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 10;
 
-        MotionEvent up = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_UP,
-                x,
-                y,
-
-                metaState
-        );
-
-        wv.dispatchTouchEvent(up);
-
-
-        //swipe gesture
-        MotionEvent down2 = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_DOWN,
-                x,
-                y,
-                metaState
-        );
-
-        wv.dispatchTouchEvent(down2);
-
-        MotionEvent move = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_MOVE,
-                1400,
-                y,
-                metaState
-        );
-
-        wv.dispatchTouchEvent(move);
-
-        MotionEvent up2 = MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_UP,
-                1600,
-                y,
-
-                metaState
-        );
-
-        wv.dispatchTouchEvent(up2);
+        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, webviewWidth / 2, webviewHeight / 2, 0));
+        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, webviewWidth / 2 + webviewWidth, webviewHeight / 2, 0));
+        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, webviewWidth / 2, webviewHeight / 2, 0));
     }
 }

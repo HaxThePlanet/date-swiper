@@ -12,12 +12,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -53,7 +56,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
 
-public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
+public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener, View.OnTouchListener {
 
     // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
@@ -75,7 +78,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     SharedPreferences sharedPref;
     private Handler customHandler = new Handler();
     private boolean go;
+
     private int webviewHeight;
+    private int webviewWidth;
+
     private boolean dashboardUp = false;
     private CookieManager cookieManager = CookieManager.getInstance();
     private HashSet likeHashMap = new HashSet();
@@ -100,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go && !Utils.isOutOfLikes()) {
-                Utils.sendClick(webview, webviewHeight);
+                Utils.sendWebviewTouchSwipe(webview, webviewHeight, webviewWidth);
             }
 
             if (isFastSwipeEnabled()) {
@@ -433,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setSupportMultipleWindows(true);
         webSettings.setJavaScriptEnabled(true);
+        webview.setOnTouchListener(this);
         webview.getSettings().setSavePassword(true);
         webview.getSettings().setSaveFormData(true);
         webview.setWebViewClient(new UriWebViewClient());
@@ -476,6 +483,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         numSwipes = numSwipes + 1;
                         EventBus.getDefault().post(new MessageEvents.SwipeEvent(numSwipes));
 
+                        //set last success like
+                        Utils.setSwipeTime(SystemClock.uptimeMillis());
+
                         Log.i("chadlike", url);
                     }
                 }
@@ -499,15 +509,13 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webview.getSettings().setGeolocationEnabled(true);
         webview.setWebChromeClient(new GeoWebChromeClient());
         webview.loadUrl(Utils.getRecsUrl());
-        webviewHeight = getWindowManager().getDefaultDisplay().getHeight() / 2;
+
+        webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
+        webviewWidth = getWindowManager().getDefaultDisplay().getWidth();
     }
 
     private boolean isFastSwipeEnabled() {
         return encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false);
-    }
-
-    private void loadRewardedVideoAd() {
-        //mRewardedVideoAd.loadAd("ca-app-pub-5336818452987335/9055464537", new AdRequest.Builder().build());
     }
 
     @Override
@@ -564,6 +572,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        //In response to the picture on the web click event by wenview touch
+        float density = getResources().getDisplayMetrics().density; //Screen density
+        float touchX = event.getX() / density;  //Must be divided by the density of the screen
+        float touchY = event.getY() / density;
+
+        return false;
+    }
+
     private class UriWebViewClient extends WebViewClient {
     }
 
@@ -598,6 +616,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             return true;
         }
 
+
+
         @Override
         public void onCloseWindow(WebView window) {
             try {
@@ -616,8 +636,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             // API_VERSION < 23. On API 23 and above, we must check for permissions, and possibly
             // ask for them.
             String perm = Manifest.permission.ACCESS_FINE_LOCATION;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                    ContextCompat.checkSelfPermission(MainActivity.this, perm) == PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(MainActivity.this, perm) == PackageManager.PERMISSION_GRANTED) {
                 // we're on SDK < 23 OR user has already granted permission
                 callback.invoke(origin, true, false);
             } else {
