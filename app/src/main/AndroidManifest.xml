@@ -21,6 +21,9 @@
         <activity android:name=".activities.WelcomeTwo" android:theme="@style/Theme.AppCompat.NoActionBar" android:configChanges="orientation" android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".activities.WelcomeThree" android:theme="@style/Theme.AppCompat.NoActionBar" android:configChanges="orientation" android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".activities.DashboardActivity" android:theme="@style/Theme.AppCompat.Translucent">
         </activity>
 
