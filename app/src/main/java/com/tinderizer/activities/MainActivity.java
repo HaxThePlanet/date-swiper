@@ -106,7 +106,20 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go && !Utils.isOutOfLikes()) {
-                Utils.sendWebviewTouchSwipe(webview, webviewHeight, webviewWidth);
+
+                if (Utils.shouldRefreshWebview()) {
+                    //force refresh webview
+
+                    //set last success like so we dont consta refresh
+                    Utils.setSwipeTime(SystemClock.uptimeMillis());
+
+                    //refresh
+                    webview.loadUrl(Utils.getRecsUrl());
+                } else {
+                    //send touches
+                    Utils.sendWebviewTouchSwipe(webview, webviewHeight, webviewWidth);
+                }
+
             }
 
             if (isFastSwipeEnabled()) {
@@ -148,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     @Override
     public void onPause() {
+        EventBus.getDefault().post(new MessageEvents.StopWebview());
         super.onPause();
     }
 
@@ -173,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     @Override
     public void onResume() {
+        EventBus.getDefault().post(new MessageEvents.StartWebview());
         super.onResume();
     }
 
@@ -607,16 +622,17 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             popWindowBuilder.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cookieManager.setAcceptThirdPartyCookies(mWebviewPop, true);
             }
+
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
             transport.setWebView(mWebviewPop);
             resultMsg.sendToTarget();
+
             return true;
         }
-
-
 
         @Override
         public void onCloseWindow(WebView window) {

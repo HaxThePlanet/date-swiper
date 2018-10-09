@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Base64;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -18,7 +19,7 @@ public class Utils {
     private static boolean isPurch;
     private static boolean outLikes;
     private static long lastSuccessRecTime;
-    private static long FORCE_REFRESH_WEBVIEW_MILLISECONDS = 60000;
+    private static long FORCE_REFRESH_WEBVIEW_MILLISECONDS = 30000;
 
     public static int getRandomNumber(int min, int max) {
         return (new Random()).nextInt((max - min) + 1) + min;
@@ -94,7 +95,7 @@ public class Utils {
     }
 
     public static boolean isPurchased() {
-        return isPurch;
+        return true;
     }
 
     public static void setPurchased(boolean purch) {
@@ -118,8 +119,12 @@ public class Utils {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 10;
 
-        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, webviewWidth / 2, webviewHeight * 0.59f, 0));
-        wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, webviewWidth / 2, webviewHeight * 0.59f, 0));
+        //wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, webviewWidth / 2, webviewHeight * 0.59f, 0));
+        //wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, webviewWidth / 2, webviewHeight * 0.59f, 0));
+
+        wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE));
+        wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE));
+
     }
 
     //swipe event

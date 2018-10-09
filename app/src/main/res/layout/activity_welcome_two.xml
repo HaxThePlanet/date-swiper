@@ -70,6 +70,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:gravity="center_vertical|center_horizontal"
             android:text="We need your permission to locate your device for swiping"
             android:textAlignment="center"
