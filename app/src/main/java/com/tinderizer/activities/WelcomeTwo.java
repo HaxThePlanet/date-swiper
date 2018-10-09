@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -61,7 +62,16 @@ public class WelcomeTwo extends AppCompatActivity {
         nextTwoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION_CODE);
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    // Do something for lollipop and above versions
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION_CODE);
+                } else{
+                    // do something for phones running an SDK before lollipop
+                    Intent myIntent = new Intent(WelcomeTwo.this, MainActivity.class);
+                    startActivity(myIntent);
+
+                    finish();
+                }
             }
         });
     }

@@ -95,7 +95,7 @@ public class Utils {
     }
 
     public static boolean isPurchased() {
-        return true;
+        return isPurch;
     }
 
     public static void setPurchased(boolean purch) {
