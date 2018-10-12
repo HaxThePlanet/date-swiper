@@ -51,6 +51,14 @@ public class Utils {
         }
     }
 
+    public static boolean isBlockedContent(String url) {
+        if (url.contains("CookiePolicy")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static String getRecsUrl() {
         try {
             byte[] tmp2 = Base64.decode(RECS_URL_BASE64, 0);

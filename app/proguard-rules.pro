@@ -18,7 +18,6 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
 -keep class org.greenrobot.eventbus.Subscribe
 ## New rules for EventBus 3.0.x ##
 # http://greenrobot.org/eventbus/documentation/proguard/
@@ -33,3 +32,11 @@
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
+
+-keep class com.appsee.** { *; }
+-dontwarn com.appsee.**
+-keep class android.support.** { *; }
+-keep interface android.support.** { *; }
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
+-keepattributes SourceFile,LineNumberTable

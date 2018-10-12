@@ -23,8 +23,8 @@ android {
         applicationId "com.tinderizer"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 24
-        versionName "1.0.0.24"
+        versionCode 26
+        versionName "1.0.0.26"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.google.firebase:firebase-ads:11.8.0'
+    implementation 'com.google.firebase:firebase-ads:17.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.pddstudio:encrypted-preferences:1.3.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -59,14 +59,14 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    implementation 'com.google.android.gms:play-services-ads:16.0.0'
+    implementation 'com.google.android.gms:play-services-ads:17.0.0'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     implementation 'com.google.firebase:firebase-core:16.0.4'
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') { transitive = true }
-
     implementation 'com.android.billingclient:billing:1.1'
-
-    implementation 'com.github.jineshfrancs:CaptchaImageView:1.0'
+    implementation 'com.appsee:appsee-android:+'
+//    implementation 'com.github.jineshfrancs:CaptchaImageView:1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

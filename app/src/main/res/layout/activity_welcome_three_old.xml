@@ -29,12 +29,10 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/logoLayout"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/top_layout"
-        android:layout_marginTop="25dp"
+        android:layout_alignParentStart="true"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="vertical">
 
@@ -48,26 +46,25 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/logoLayout"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="25dp">
+        android:layout_marginRight="15dp">
 
         <TextView
             android:id="@+id/welcomeText5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="202dp"
             android:gravity="center_vertical|center_horizontal"
             android:text="Last Step!"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="28dp" />
+            android:textSize="26dp" />
 
         <TextView
             android:id="@+id/welcomeText2"
@@ -75,12 +72,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/welcomeText5"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
             android:gravity="center_vertical|center_horizontal"
-            android:text="You will need to login to Tinder.com"
+            android:text="We just need to make sure you're human"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="15dp" />
 
         <TextView
             android:id="@+id/welcomeText6"
@@ -88,12 +84,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/welcomeText2"
-            android:layout_marginTop="5dp"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Happy swiping!"
+            android:text="To continue, type the characters you see in the picture"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="15dp" />
+
+        <test.jinesh.captchaimageviewlib.CaptchaImageView
+            android:id="@+id/captchaImage"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/welcomeText6"
+            android:layout_marginTop="15dp" />
 
         <Button
             android:id="@+id/nextThreeButton"
@@ -102,8 +105,16 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:text="Login to Tinder" />
+            android:text="NEXT" />
 
+        <EditText
+            android:id="@+id/captchaAnswerTextview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/captchaImage"
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
     </RelativeLayout>
 
 </RelativeLayout>

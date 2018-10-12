@@ -6,12 +6,22 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".application.SwiperApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+
         <activity android:name=".activities.MainActivity" android:theme="@style/Theme.AppCompat.NoActionBar" android:configChanges="orientation" android:screenOrientation="portrait">
         </activity>
 
@@ -46,6 +56,8 @@
             android:name="io.fabric.ApiKey"
             android:value="640434ba300db144caa587ee991bd41969d4c024"
             />
+
+        <meta-data android:name="com.appsee.ApiKey" android:value="7c8e10fbe298485eb809fd7e1974dbbd" />
     </application>
 
 </manifest>

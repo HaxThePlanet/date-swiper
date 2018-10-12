@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Date Swiper</string>
+    <string name="ga_trackingId" translatable="false">UA-127402294-1</string>
 </resources>

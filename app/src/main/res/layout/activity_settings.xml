@@ -34,8 +34,8 @@
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/top_layout"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="bottom"
         android:orientation="horizontal">
 
@@ -46,7 +46,7 @@
             android:gravity="center_vertical"
             android:text="Fast Swiping"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <Switch
             android:id="@+id/fastSwipeSwitch"
@@ -68,8 +68,8 @@
         android:layout_height="50dp"
         android:layout_below="@+id/setting_one_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="bottom"
         android:orientation="horizontal"
         android:visibility="gone">
@@ -81,7 +81,7 @@
             android:gravity="center_vertical"
             android:text="Notifications"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <Switch
             android:id="@+id/notifSwitch"
@@ -106,9 +106,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/version_layout"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="vertical">
 
@@ -120,7 +120,7 @@
             android:text="Faster Swipes"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <TextView
             android:id="@+id/textView4"
@@ -130,7 +130,7 @@
             android:text="No Ads"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <TextView
             android:id="@+id/textView2"
@@ -140,7 +140,7 @@
             android:text="Unlimited Swipes"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <Button
             android:id="@+id/upgradeButton"
@@ -156,8 +156,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="vertical">
 
@@ -165,14 +165,14 @@
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="15dp"
             android:text="Logout" />
 
         <TextView
             android:id="@+id/versionTextview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="15dp"
             android:text="1.0.0.0" />
     </LinearLayout>
 
@@ -191,8 +191,8 @@
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_three_layout"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="center_vertical|center_horizontal">
 
         <TextView
@@ -202,7 +202,7 @@
             android:gravity="center_vertical"
             android:text="Background Swipe"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <Switch
             android:id="@+id/backgroundSwipe"
@@ -221,8 +221,8 @@
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/setting_one_layout"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:gravity="center_vertical|center_horizontal">
 
         <TextView
@@ -232,7 +232,7 @@
             android:gravity="center_vertical"
             android:text="Change Location"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <ImageButton
             android:id="@+id/changeLocation"

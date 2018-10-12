@@ -35,8 +35,15 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.appsee.Appsee;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LevelEndEvent;
+import com.crashlytics.android.answers.LevelStartEvent;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.R;
+import com.tinderizer.application.SwiperApplication;
 import com.tinderizer.events.MessageEvents;
 import com.tinderizer.utils.Utils;
 
@@ -57,11 +64,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
 
 public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener, View.OnTouchListener {
-
     // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
     private static final int freeLikesCount = 100;
-    private static final String TAG = "BillingManager";
+    private static final String TAG = MainActivity.class.getName();
     private static final String BASE_64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlXMysh/BZaZV0trE7UU+Vm5mrkJssmrBYfCHnpE9rQELfwBcwhQuIzSpTAENJgVCU+wK5h2J0ffG7v8GMfRMJ/xiEFoG73EMNSkuKVszpEuGI+UIwQQNg537xPFBWcDWrm43RIP0/v+HPCYd9p4oWSmepH0Gu9hiGQF+XBPY0xYdp2WohAuSJAXjiQmxjU8QhYZKJ9fs5LVxZwsM4MP9W7RTiLvcCETBt3/O/RRmu92pbZ2GkmLbFmDhifYXK/mpNbSSIplrbpSi2XnhyUYMwNiUUh3XCvsvz6fk2W2CdTyIWDTjiPHKkzZbUyQ5OXOOyoC5madiUs1TR2BFB5elLwIDAQAB";
     private static String mGeolocationOrigin;
     private static GeolocationPermissions.Callback mGeolocationCallback;
@@ -73,11 +79,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private final String BG_KEY = "BG_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;
     private final List<Purchase> mPurchases = new ArrayList<>();
-
     @BindView(R.id.webview)
     WebView webviewMain;
-
     SharedPreferences preferences;
+    private Tracker googleTracker;
     private Handler swipeHandler = new Handler();
     private Handler billingHandler = new Handler();
     private boolean go;
@@ -167,11 +172,25 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.ButtonPlayEvent event) {
         go = true;
+
+        googleTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("ButtonPlayEvent")
+                .build());
+
+        Answers.getInstance().logLevelStart(new LevelStartEvent());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.ButtonPauseEvent event) {
         go = false;
+
+        googleTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("ButtonPauseEvent")
+                .build());
+
+        Answers.getInstance().logLevelEnd(new LevelEndEvent());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -312,6 +331,22 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         android.os.Handler customHandler = new android.os.Handler();
         customHandler.postDelayed(updateTimerThread, 0);
+
+        setupAnalytics();
+
+
+    }
+
+    private void setupAnalytics() {
+        //appsee
+
+        Appsee.start();
+
+        // Obtain the shared Tracker instance.
+        SwiperApplication application = (SwiperApplication) getApplication();
+        googleTracker = application.getDefaultTracker();
+        googleTracker.setScreenName(TAG);
+        googleTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     /**
@@ -528,6 +563,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webviewMain.getSettings().setSavePassword(true);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             cookieManager.setAcceptThirdPartyCookies(webviewMain, true);
         }
@@ -535,6 +571,23 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         cookieManager.setAcceptCookie(true);
 
         webviewMain.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                if (Utils.isBlockedContent(url)) {
+//                    return true;
+//                }
+//
+//                return false;
+//            }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                // hide element by class name
+                view.loadUrl("javascript:(function() { " +
+                        "document.getElementsByClassName('your_class_name')[0].style.display='none'; })()");
+                // hide element by id
+                view.loadUrl("javascript:(function() { " +
+                        "document.getElementById('your_id').style.display='none';})()");
+            }
             @Override
             public void onLoadResource(WebView view, String url) {
                 Log.i("chadtest", url);
@@ -646,6 +699,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             String host = Uri.parse(url).getHost();
+
             if (host.equals(Utils.getRecsUrl())) {
                 return false;
             }
