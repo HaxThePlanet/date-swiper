@@ -26,8 +26,6 @@ import butterknife.ButterKnife;
 import test.jinesh.captchaimageviewlib.CaptchaImageView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
-
 public class WelcomeThree extends AppCompatActivity {
     private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;

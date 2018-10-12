@@ -75,6 +75,10 @@ public class Utils {
         return outLikes;
     }
 
+    public static void setOutOfLikes(boolean likes) {
+        outLikes = likes;
+    }
+
     public static boolean shouldRefreshWebview() {
         if (lastSuccessRecTime == 0) return false;
 
@@ -88,10 +92,6 @@ public class Utils {
 
     public static void setSwipeTime(long time) {
         lastSuccessRecTime = time;
-    }
-
-    public static void setOutOfLikes(boolean likes) {
-        outLikes = likes;
     }
 
     public static boolean isPurchased() {

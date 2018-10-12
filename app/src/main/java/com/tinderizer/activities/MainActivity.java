@@ -70,13 +70,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
     private final String TOTAL_SWIPES_KEY = "SWIPES_KEY";
+    private final String BG_KEY = "BG_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;
     private final List<Purchase> mPurchases = new ArrayList<>();
+
     @BindView(R.id.webview)
-    WebView webview;
+    WebView webviewMain;
+
     SharedPreferences preferences;
-    SharedPreferences sharedPref;
-    private Handler customHandler = new Handler();
+    private Handler swipeHandler = new Handler();
+    private Handler billingHandler = new Handler();
     private boolean go;
 
     private int webviewHeight;
@@ -85,14 +88,18 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private boolean dashboardUp = false;
     private CookieManager cookieManager = CookieManager.getInstance();
     private HashSet likeHashMap = new HashSet();
-    private WebView mWebviewPop;
+    private WebView webviewPopup;
     private AlertDialog popWindowBuilder;
+
     private int slowMinSpeed = 1000;
     private int slowMaxSpeed = 3000;
+
     private int fastMinSpeed = 250;
     private int fastMaxSpeed = 1500;
+
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
+
     /**
      * A reference to BillingClient
      **/
@@ -103,29 +110,48 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
      */
     private boolean mIsServiceConnected;
 
+    private int checkBillingHowMany = 3;
+    private int haveCheckedBillingTimes = 0;
+    private int billingCheckEachTimeDelay = 10000;
+
+    private Runnable checkPurchasesThread = new Runnable() {
+        public void run() {
+            queryPurchases();
+
+            if (haveCheckedBillingTimes <= checkBillingHowMany) {
+                //run check again
+                billingHandler.postDelayed(this, billingCheckEachTimeDelay);
+                haveCheckedBillingTimes += 1;
+            } else {
+                //dont run again
+                haveCheckedBillingTimes = 0;
+            }
+        }
+    };
+
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
             if (go && !Utils.isOutOfLikes()) {
 
                 if (Utils.shouldRefreshWebview()) {
-                    //force refresh webview
+                    //force refresh webviewMain
 
                     //set last success like so we dont consta refresh
                     Utils.setSwipeTime(SystemClock.uptimeMillis());
 
                     //refresh
-                    webview.loadUrl(Utils.getRecsUrl());
+                    webviewMain.loadUrl(Utils.getRecsUrl());
                 } else {
                     //send touches
-                    Utils.sendWebviewTouchSwipe(webview, webviewHeight, webviewWidth);
+                    Utils.sendWebviewTouchSwipe(webviewMain, webviewHeight, webviewWidth);
                 }
 
             }
 
             if (isFastSwipeEnabled()) {
-                customHandler.postDelayed(this, Utils.getRandomNumber(fastMinSpeed, fastMaxSpeed));
+                swipeHandler.postDelayed(this, Utils.getRandomNumber(fastMinSpeed, fastMaxSpeed));
             } else {
-                customHandler.postDelayed(this, Utils.getRandomNumber(slowMinSpeed, slowMaxSpeed));
+                swipeHandler.postDelayed(this, Utils.getRandomNumber(slowMinSpeed, slowMaxSpeed));
             }
         }
     };
@@ -133,26 +159,47 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.CheckBilling event) {
         queryPurchases();
+
+        android.os.Handler customHandler = new android.os.Handler();
+        swipeHandler.postDelayed(checkPurchasesThread, billingCheckEachTimeDelay);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvents.PlayEvent event) {
+    public void onMessageEvent(MessageEvents.ButtonPlayEvent event) {
         go = true;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvents.PauseEvent event) {
+    public void onMessageEvent(MessageEvents.ButtonPauseEvent event) {
         go = false;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.StopWebview event) {
-        webview.loadUrl("");
+        if (!encryptedPreferences.getBoolean(BG_KEY, false)) {
+            webviewMain.loadUrl("");
+
+            if (webviewMain != null) {
+                webviewMain.onPause();
+            }
+
+            if (webviewPopup != null) {
+                webviewPopup.onPause();
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.StartWebview event) {
-        webview.loadUrl(Utils.getRecsUrl());
+        if (webviewMain != null) {
+            webviewMain.onResume();
+        }
+
+        if (webviewPopup != null) {
+            webviewPopup.onResume();
+        }
+
+        webviewMain.loadUrl(Utils.getRecsUrl());
     }
 
     private int getTotalSwipes() {
@@ -161,13 +208,40 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     @Override
     public void onPause() {
-        EventBus.getDefault().post(new MessageEvents.StopWebview());
+        if (!encryptedPreferences.getBoolean(BG_KEY, false)) {
+            EventBus.getDefault().post(new MessageEvents.StopWebview());
+
+            if (webviewMain != null) {
+                webviewMain.onPause();
+            }
+
+            if (webviewPopup != null) {
+                webviewPopup.onPause();
+            }
+        }
+
         super.onPause();
     }
 
     @Override
+    public void onResume() {
+        EventBus.getDefault().post(new MessageEvents.StartWebview());
+
+        if (!encryptedPreferences.getBoolean(BG_KEY, false)) {
+            if (webviewMain != null) {
+                webviewMain.onResume();
+            }
+
+            if (webviewPopup != null) {
+                webviewPopup.onResume();
+            }
+        }
+
+        super.onResume();
+    }
+
+    @Override
     public void onDestroy() {
-//        mCheckout.stop();
         super.onDestroy();
     }
 
@@ -183,12 +257,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
-    }
-
-    @Override
-    public void onResume() {
-        EventBus.getDefault().post(new MessageEvents.StartWebview());
-        super.onResume();
     }
 
     @Override
@@ -244,8 +312,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         android.os.Handler customHandler = new android.os.Handler();
         customHandler.postDelayed(updateTimerThread, 0);
-
-
     }
 
     /**
@@ -448,27 +514,27 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     }
 
     private void setupWebview() {
-        WebSettings webSettings = webview.getSettings();
+        WebSettings webSettings = webviewMain.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setSupportMultipleWindows(true);
         webSettings.setJavaScriptEnabled(true);
-        webview.setOnTouchListener(this);
-        webview.getSettings().setSavePassword(true);
-        webview.getSettings().setSaveFormData(true);
-        webview.setWebViewClient(new UriWebViewClient());
-        webview.setWebChromeClient(new GeoWebChromeClient());
-        webview.getSettings().setSavePassword(true);
+        webviewMain.setOnTouchListener(this);
+        webviewMain.getSettings().setSavePassword(true);
+        webviewMain.getSettings().setSaveFormData(true);
+        webviewMain.setWebViewClient(new UriWebViewClient());
+        webviewMain.setWebChromeClient(new GeoWebChromeClient());
+        webviewMain.getSettings().setSavePassword(true);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.setAcceptThirdPartyCookies(webview, true);
+            cookieManager.setAcceptThirdPartyCookies(webviewMain, true);
         }
 
         cookieManager.setAcceptCookie(true);
 
-        webview.setWebViewClient(new WebViewClient() {
+        webviewMain.setWebViewClient(new WebViewClient() {
             @Override
             public void onLoadResource(WebView view, String url) {
                 Log.i("chadtest", url);
@@ -513,17 +579,17 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             }
         });
 
-        webview.getSettings().setAllowContentAccess(true);
-        webview.getSettings().setDomStorageEnabled(true);
-        webview.getSettings().setAllowFileAccess(true);
-        webview.getSettings().setAllowFileAccessFromFileURLs(true);
-        webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webview.getSettings().setAppCacheEnabled(true);
-        webview.getSettings().setDatabaseEnabled(true);
-        webview.getSettings().setJavaScriptEnabled(true);
-        webview.getSettings().setGeolocationEnabled(true);
-        webview.setWebChromeClient(new GeoWebChromeClient());
-        webview.loadUrl(Utils.getRecsUrl());
+        webviewMain.getSettings().setAllowContentAccess(true);
+        webviewMain.getSettings().setDomStorageEnabled(true);
+        webviewMain.getSettings().setAllowFileAccess(true);
+        webviewMain.getSettings().setAllowFileAccessFromFileURLs(true);
+        webviewMain.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webviewMain.getSettings().setAppCacheEnabled(true);
+        webviewMain.getSettings().setDatabaseEnabled(true);
+        webviewMain.getSettings().setJavaScriptEnabled(true);
+        webviewMain.getSettings().setGeolocationEnabled(true);
+        webviewMain.setWebChromeClient(new GeoWebChromeClient());
+        webviewMain.loadUrl(Utils.getRecsUrl());
 
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
         webviewWidth = getWindowManager().getDefaultDisplay().getWidth();
@@ -559,11 +625,21 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     @Override
     public void onBackPressed() {
         // Pop the browser back stack or exit the activity
-        if (webview.canGoBack()) {
+        if (webviewMain.canGoBack()) {
         } else {
-            webview.goBack();
+            webviewMain.goBack();
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        //In response to the picture on the web click event by wenview touch
+        float density = getResources().getDisplayMetrics().density; //Screen density
+        float touchX = event.getX() / density;  //Must be divided by the density of the screen
+        float touchY = event.getY() / density;
+
+        return false;
     }
 
     private class MyCustomWebViewClient extends WebViewClient {
@@ -587,16 +663,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        //In response to the picture on the web click event by wenview touch
-        float density = getResources().getDisplayMetrics().density; //Screen density
-        float touchX = event.getX() / density;  //Must be divided by the density of the screen
-        float touchY = event.getY() / density;
-
-        return false;
-    }
-
     private class UriWebViewClient extends WebViewClient {
     }
 
@@ -607,28 +673,28 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     public class GeoWebChromeClient extends WebChromeClient {
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            mWebviewPop = new WebView(getApplicationContext());
-            mWebviewPop.setVerticalScrollBarEnabled(false);
-            mWebviewPop.setHorizontalScrollBarEnabled(false);
-            mWebviewPop.setWebViewClient(new UriWebViewClient());
-            mWebviewPop.setWebChromeClient(new GeoWebChromeClient());
-            mWebviewPop.getSettings().setJavaScriptEnabled(true);
-            mWebviewPop.getSettings().setSavePassword(true);
-            mWebviewPop.getSettings().setSaveFormData(true);
+            webviewPopup = new WebView(getApplicationContext());
+            webviewPopup.setVerticalScrollBarEnabled(false);
+            webviewPopup.setHorizontalScrollBarEnabled(false);
+            webviewPopup.setWebViewClient(new UriWebViewClient());
+            webviewPopup.setWebChromeClient(new GeoWebChromeClient());
+            webviewPopup.getSettings().setJavaScriptEnabled(true);
+            webviewPopup.getSettings().setSavePassword(true);
+            webviewPopup.getSettings().setSaveFormData(true);
             popWindowBuilder = new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT).create();
             popWindowBuilder.setTitle("");
-            popWindowBuilder.setView(mWebviewPop);
+            popWindowBuilder.setView(webviewPopup);
             popWindowBuilder.show();
             popWindowBuilder.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.setAcceptThirdPartyCookies(mWebviewPop, true);
+                cookieManager.setAcceptThirdPartyCookies(webviewPopup, true);
             }
 
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-            transport.setWebView(mWebviewPop);
+            transport.setWebView(webviewPopup);
             resultMsg.sendToTarget();
 
             return true;
@@ -637,7 +703,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         @Override
         public void onCloseWindow(WebView window) {
             try {
-                mWebviewPop.destroy();
+                webviewPopup.destroy();
             } catch (Exception e) {
             }
             try {

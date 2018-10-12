@@ -58,10 +58,10 @@ public class WelcomeTwo extends AppCompatActivity {
         nextTwoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     // Do something for lollipop and above versions
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION_CODE);
-                } else{
+                } else {
                     // do something for phones running an SDK before lollipop
                     Intent myIntent = new Intent(WelcomeTwo.this, WelcomeThree.class);
                     startActivity(myIntent);

@@ -49,23 +49,36 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     private static boolean launchPurchase;
     private final String FAST_SWIPE_KEY = "FAST_SWIPE_KEY";
     private final String NOTIF_KEY = "NOTIF_KEY";
+    private final String BG_KEY = "BG_KEY";
     private final List<Purchase> mPurchases = new ArrayList<>();
+
     @BindView(R.id.changeLocation)
     ImageButton changeLocation;
+
     @BindView(R.id.logoutButton)
     Button logoutButton;
+
     @BindView(R.id.upgradeButton)
     Button upgradeButton;
+
     @BindView(R.id.notifSwitch)
     Switch notifSwitch;
+
     @BindView(R.id.buy_layout)
     LinearLayout buyLayout;
+
     @BindView(R.id.fastSwipeSwitch)
     Switch fastSwipeSwitch;
+
+    @BindView(R.id.backgroundSwipe)
+    Switch backgroundSwipe;
+
     @BindView(R.id.versionTextview)
     TextView versionTextview;
+
     String deviceID;
     EncryptedPreferences encryptedPreferences;
+
     /**
      * A reference to BillingClient
      **/
@@ -81,6 +94,12 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
         EventBus.getDefault().post(new MessageEvents.CheckBilling());
 
         super.onBackPressed();
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().post(new MessageEvents.CheckBilling());
+        super.onDestroy();
     }
 
     @Override
@@ -146,6 +165,14 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
             }
         });
 
+        backgroundSwipe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                encryptedPreferences.edit()
+                        .putBoolean(BG_KEY, isChecked)
+                        .apply();
+            }
+        });
+
         notifSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 encryptedPreferences.edit()
@@ -171,6 +198,37 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                         builder
                                 .setTitle("Upgrade")
                                 .setMessage("Upgrade to paid version for faster swiping")
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                    }
+
+                    //block
+                    return true;
+                } else {
+                    //allow
+                    return false;
+                }
+            }
+        });
+
+        backgroundSwipe.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (!Utils.isPurchased()) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                        builder
+                                .setTitle("Upgrade")
+                                .setMessage("Upgrade to paid version for background swiping")
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -330,6 +388,35 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
         executeServiceRequest(purchaseFlowRequest);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("INFO", "chad");
+        queryPurchases();
+
+//        if (requestCode == REQUEST_CODE_RECOVER_PLAY_SERVICES) {
+//            if (resultCode == RESULT_CANCELED) {
+////                Toast.makeText(this, "Google Play Services must be installed.", Toast.LENGTH_SHORT).show();
+//                finish();
+//            }
+//        } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+//            // LOAD FROM CAMERA
+////            ivf.LoadImage(tmpFilePath, quality, resolution, format);
+//
+//        } else if (requestCode == BUY_PREMIUM && resultCode == Activity.RESULT_OK) {
+//
+////            this.onPremiumPurchase();
+//
+//        } else if( requestCode == RC_REQUEST) {
+//            if (mHelper == null) {
+////                Toast.makeText(mContext, "mHelper is NULL", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//            // Pass on the activity result to the helper for handling
+////            mHelper.handleActivityResult(requestCode, resultCode, data);
+//        }
+
+    }
+
     public void startServiceConnection(final Runnable executeOnSuccess) {
         mBillingClient.startConnection(new BillingClientStateListener() {
             @Override
@@ -471,6 +558,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     private void setupSwitches() {
         notifSwitch.setChecked(encryptedPreferences.getBoolean(NOTIF_KEY, true));
         fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
+        backgroundSwipe.setChecked(encryptedPreferences.getBoolean(BG_KEY, false));
     }
 
     private void logoutDatingApp() {

@@ -9,13 +9,13 @@ public class MessageEvents {
         }
     }
 
-    public static class PauseEvent {
-        public PauseEvent() {
+    public static class ButtonPauseEvent {
+        public ButtonPauseEvent() {
         }
     }
 
-    public static class PlayEvent {
-        public PlayEvent() {
+    public static class ButtonPlayEvent {
+        public ButtonPlayEvent() {
         }
     }
 

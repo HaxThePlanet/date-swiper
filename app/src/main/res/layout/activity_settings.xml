@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:gravity="bottom">
@@ -12,8 +12,8 @@
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
         android:background="@color/bg_grey">
 
         <TextView
@@ -32,8 +32,8 @@
         android:id="@+id/setting_one_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@+id/top_layout"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/top_layout"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="bottom"
@@ -59,12 +59,11 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_below="@+id/setting_one_layout"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/setting_one_layout"
         android:background="@color/bg_grey" />
 
     <LinearLayout
-        android:id="@+id/setting_three_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/setting_one_layout"
@@ -96,8 +95,8 @@
         android:id="@+id/view"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_alignTop="@+id/setting_two_layout"
         android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/setting_two_layout"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
 
@@ -107,9 +106,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/version_layout"
         android:layout_alignParentStart="true"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="vertical">
 
@@ -155,8 +154,8 @@
         android:id="@+id/version_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical|center_horizontal"
@@ -181,8 +180,8 @@
         android:id="@+id/view2"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_below="@+id/setting_two_layout"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/setting_two_layout"
         android:layout_weight="1"
         android:background="@color/bg_grey" />
 
@@ -190,14 +189,44 @@
         android:id="@+id/setting_two_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@+id/setting_three_layout"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/setting_three_layout"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical|center_horizontal">
 
         <TextView
             android:id="@+id/changeLocationText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Background Swipe"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <Switch
+            android:id="@+id/backgroundSwipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="0dp"
+            android:textAlignment="textEnd" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/setting_three_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/setting_one_layout"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical|center_horizontal">
+
+        <TextView
+            android:id="@+id/isBackgroungText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
@@ -210,11 +239,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
             android:layout_marginTop="5dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_gps_fixed_black_24dp" />
+            app:srcCompat="@drawable/ic_gps_fixed_black_24dp" />
 
     </RelativeLayout>
 

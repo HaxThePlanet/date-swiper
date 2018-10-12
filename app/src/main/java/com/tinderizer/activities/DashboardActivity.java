@@ -93,12 +93,18 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        adView.getVideoController().pause();
+        adView.pause();
+
         EventBus.getDefault().post(new MessageEvents.StopWebview());
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        adView.resume();
+        adView.getVideoController().play();
+
         EventBus.getDefault().post(new MessageEvents.StartWebview());
         super.onResume();
     }
@@ -185,7 +191,7 @@ public class DashboardActivity extends AppCompatActivity {
                     if (!Utils.isOutOfLikes()) {
                         isPlay = false;
                         playPauseImg.setBackground(getDrawable(R.drawable.play));
-                        EventBus.getDefault().post(new MessageEvents.PauseEvent());
+                        EventBus.getDefault().post(new MessageEvents.ButtonPauseEvent());
                     } else {
                         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(DashboardActivity.this);
                         builder
@@ -220,7 +226,7 @@ public class DashboardActivity extends AppCompatActivity {
                     if (!Utils.isOutOfLikes()) {
                         isPlay = true;
                         playPauseImg.setBackground(getDrawable(R.drawable.pause));
-                        EventBus.getDefault().post(new MessageEvents.PlayEvent());
+                        EventBus.getDefault().post(new MessageEvents.ButtonPlayEvent());
                     } else {
                         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(DashboardActivity.this);
                         builder
@@ -337,7 +343,7 @@ public class DashboardActivity extends AppCompatActivity {
             playPauseImg.setBackground(getDrawable(R.drawable.play));
 
             //pause swiper
-            EventBus.getDefault().post(new MessageEvents.PauseEvent());
+            EventBus.getDefault().post(new MessageEvents.ButtonPauseEvent());
 
             if (!showingOutLikesAlert) {
                 showingOutLikesAlert = true;
@@ -381,6 +387,7 @@ public class DashboardActivity extends AppCompatActivity {
         Utils.setPurchased(false);
         swipeProgress.setVisibility(View.VISIBLE);
         adView.setVisibility(View.VISIBLE);
+        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -388,6 +395,16 @@ public class DashboardActivity extends AppCompatActivity {
         Utils.setPurchased(true);
         swipeProgress.setVisibility(View.INVISIBLE);
         adView.setVisibility(View.INVISIBLE);
+
+        //set text
+        int totalSwipes = getTotalSwipes();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("total_swipes", totalSwipes + 1);
+        editor.apply();
+        editor.commit();
+
+        swipeCount.setText("Total Swipes " + String.valueOf(totalSwipes));
+
     }
 }
 
