@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Date Swiper</string>
     <string name="ga_trackingId" translatable="false">UA-127402294-1</string>
+
+    <string name="facebook_app_id">727733127625088</string>
+    <string name="fb_login_protocol_scheme">fb236565693864321</string>
 </resources>

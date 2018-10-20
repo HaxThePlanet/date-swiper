@@ -11,12 +11,21 @@
     <WebView
         android:id="@+id/webview"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="35dp">
+
+    </WebView>
+
+    <WebView
+        android:id="@+id/webviewLoad"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
 
     </WebView>
 

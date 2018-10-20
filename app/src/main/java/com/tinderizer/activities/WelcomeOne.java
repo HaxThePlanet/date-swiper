@@ -24,6 +24,7 @@ public class WelcomeOne extends AppCompatActivity {
     @BindView(R.id.nextOneButton)
     Button nextOneButton;
 
+
     @Override
     public void onStop() {
         super.onStop();
@@ -49,6 +50,7 @@ public class WelcomeOne extends AppCompatActivity {
         setContentView(R.layout.activity_welcome_one);
 
         ButterKnife.bind(this);
+
 
         Fabric.with(this, new Crashlytics());
 

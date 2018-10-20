@@ -26,6 +26,8 @@ import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -39,6 +41,8 @@ import com.appsee.Appsee;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LevelEndEvent;
 import com.crashlytics.android.answers.LevelStartEvent;
+import com.facebook.internal.Utility;
+import com.google.android.gms.ads.internal.gmsg.HttpClient;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
@@ -50,15 +54,27 @@ import com.tinderizer.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jcodec.Util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
@@ -79,8 +95,13 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private final String BG_KEY = "BG_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;
     private final List<Purchase> mPurchases = new ArrayList<>();
+
     @BindView(R.id.webview)
     WebView webviewMain;
+
+    @BindView(R.id.webviewLoad)
+    WebView webviewLoad;
+
     SharedPreferences preferences;
     private Tracker googleTracker;
     private Handler swipeHandler = new Handler();
@@ -334,7 +355,37 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         setupAnalytics();
 
+//        authTinder();
 
+        webviewMain.loadDataWithBaseURL("", "HIT", "text/html", "UTF-8", "");
+
+    }
+
+    private void authTinder() {
+        try {
+//            String postData = "token=EAAGm0PX4ZCpsBAIy8j9xa96mT9wQrDyAtIaXErIi4h8YJKHdKqF37v659EZC0wZBVjezqLLrVRkq1C09y96QiIl6xvZCiBoXwu7TLudHDb8pwrSyZA10yZAJzgwHD7ZB7yUSyfPrgILVA7PMm8wJmy4pMfujQYLZADoJFmXHHyzZCitx1zjCTKhCi9wZBQZCTgbRSN3TbwhrJzFNY5C7LkZCuXZAv";
+//            webviewMain.postUrl("https://api.gotinder.com/v2/auth/login/facebook?locale=en", URLEncoder.encode(postData, java.nio.charset.StandardCharsets.UTF_8.toString()).getBytes());
+
+//            Map<String, String> extraHeaders = new HashMap<String, String>();
+//            extraHeaders.put("token","EAAGm0PX4ZCpsBAIy8j9xa96mT9wQrDyAtIaXErIi4h8YJKHdKqF37v659EZC0wZBVjezqLLrVRkq1C09y96QiIl6xvZCiBoXwu7TLudHDb8pwrSyZA10yZAJzgwHD7ZB7yUSyfPrgILVA7PMm8wJmy4pMfujQYLZADoJFmXHHyzZCitx1zjCTKhCi9wZBQZCTgbRSN3TbwhrJzFNY5C7LkZCuXZAv");
+//            extraHeaders.put("Content-Type","application/x-www-form-urlencoded");
+
+//            webviewMain.postUrl("https://api.gotinder.com/v2/auth/login/facebook?locale=en", postData.getBytes());
+
+            // Add here your headers (could be good to import original request header here!!!)
+//            Map<String, String> customHeaders = new HashMap<String, String>();
+//
+//            customHeaders.put("token","EAAGm0PX4ZCpsBAIy8j9xa96mT9wQrDyAtIaXErIi4h8YJKHdKqF37v659EZC0wZBVjezqLLrVRkq1C09y96QiIl6xvZCiBoXwu7TLudHDb8pwrSyZA10yZAJzgwHD7ZB7yUSyfPrgILVA7PMm8wJmy4pMfujQYLZADoJFmXHHyzZCitx1zjCTKhCi9wZBQZCTgbRSN3TbwhrJzFNY5C7LkZCuXZAv");
+//            customHeaders.put("Content-Type","application/x-www-form-urlencoded");
+
+//            webviewMain.loadUrl(Utils.getRecsUrl(), customHeaders);
+//            webviewMain.postUrl("https://api.gotinder.com/v2/auth/login/facebook?locale=en", postData.getBytes());
+
+
+            webviewMain.loadUrl(Utils.getRecsUrl());
+        } catch (Exception ex) {
+            Log.i(TAG, "Encoding error");
+        }
     }
 
     private void setupAnalytics() {
@@ -548,6 +599,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         return true;
     }
 
+    int hasRun = 0;
+    public static final MediaType JSON = MediaType.parse("application/json");
+
     private void setupWebview() {
         WebSettings webSettings = webviewMain.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -558,7 +612,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webviewMain.setOnTouchListener(this);
         webviewMain.getSettings().setSavePassword(true);
         webviewMain.getSettings().setSaveFormData(true);
-        webviewMain.setWebViewClient(new UriWebViewClient());
+//        webviewMain.setWebViewClient(getWebViewClientWithCustomHeader());
         webviewMain.setWebChromeClient(new GeoWebChromeClient());
         webviewMain.getSettings().setSavePassword(true);
         CookieManager cookieManager = CookieManager.getInstance();
@@ -568,10 +622,106 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             cookieManager.setAcceptThirdPartyCookies(webviewMain, true);
         }
 
+        webSettings = webviewLoad.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setSupportMultipleWindows(true);
+        webSettings.setJavaScriptEnabled(true);
+        webviewLoad.setOnTouchListener(this);
+        webviewLoad.getSettings().setSavePassword(true);
+        webviewLoad.getSettings().setSaveFormData(true);
+        webviewLoad.getSettings().setSavePassword(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.setAcceptThirdPartyCookies(webviewMain, true);
+        }
+
+
+
+
         cookieManager.setAcceptCookie(true);
 
         webviewMain.setWebViewClient(new WebViewClient() {
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                try {
+                    RequestBody body = RequestBody.create(JSON, "{\"token\":\"EAAGm0PX4ZCpsBAOLwC8RasjTNBfztH1xu17MKcDTtKGKqK8ZBLCDlZBZCvCrDigfso18pFzpr74Ix0ey3ybNyMoCzHWF2pxzyaesYmnbizjX5mB9ouvk7rOCe1aNhbPuyOZAsK7JvknwJLR2MBHw6B90mGpaAxL5kEpor5Hixs3p8nigXKbAfNH4ALtXZBU9u2zZCCGzaDbMokl6xTN7nPE\"}");
+
+                    OkHttpClient httpClient = new OkHttpClient();
+                    Request request = new Request.Builder()
+                            .url(url.trim())
+                            .post(body)
+                            .addHeader("token", "EAAGm0PX4ZCpsBAOLwC8RasjTNBfztH1xu17MKcDTtKGKqK8ZBLCDlZBZCvCrDigfso18pFzpr74Ix0ey3ybNyMoCzHWF2pxzyaesYmnbizjX5mB9ouvk7rOCe1aNhbPuyOZAsK7JvknwJLR2MBHw6B90mGpaAxL5kEpor5Hixs3p8nigXKbAfNH4ALtXZBU9u2zZCCGzaDbMokl6xTN7nPE")
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+                    Response response = httpClient.newCall(request).execute();
+
+                    if (response.code() == 200 && url.equals("https://api.gotinder.com/v2/auth/login/facebook?locale=en")) {
+                        //good auth, goto recs
+
+                        request = new Request.Builder()
+                                .url(Utils.getRecsUrl())
+                                .post(body)
+                                .addHeader("token", "EAAGm0PX4ZCpsBAOLwC8RasjTNBfztH1xu17MKcDTtKGKqK8ZBLCDlZBZCvCrDigfso18pFzpr74Ix0ey3ybNyMoCzHWF2pxzyaesYmnbizjX5mB9ouvk7rOCe1aNhbPuyOZAsK7JvknwJLR2MBHw6B90mGpaAxL5kEpor5Hixs3p8nigXKbAfNH4ALtXZBU9u2zZCCGzaDbMokl6xTN7nPE")
+                                .addHeader("Content-Type", "application/json")
+                                .build();
+//                        response = httpClient.newCall(request).execute();
+
+                        String[] myResponse =new String[2];
+
+                        try (Response responseNew = httpClient.newCall(request).execute()) {
+                            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                            myResponse[1]=response.body().string();
+                            System.out.println(" URL is "+myResponse[0]+" my response body is "+myResponse[1]);
+
+                        }
+
+//                        webviewLoad.loadDataWithBaseURL("", response.body().string(),"", "text/html", "UTF-8");
+
+                        return new WebResourceResponse(response.header("text/html", response.body().contentType().type()), // You can set something other as default content-type
+                                response.header("content-encoding", "utf-8"),  // Again, you can set another encoding as default
+                                response.body().byteStream());
+                    }
+
+
+//                    if (hasRun == 0) {
+//                        hasRun = 1;
+////                        webviewMain.loadDataWithBaseURL("", response.body().string(), "text/html", "UTF-8", "");
+//
+//                        webviewMain.loadDataWithBaseURL("", "HIT", "text/html", "UTF-8", "");
+//
+////                        webviewMain.loadDataWithBaseURL("", "HI""", "text/html", "UTF-8", "");
+//                    }
+
+//                    return new WebResourceResponse(response.header("content-type", "text/html"), response.header("content-encoding", "utf-8"), response.body().byteStream());
+                    return null;
+
+                } catch (Exception e) {
+                    //return null to tell WebView we failed to fetch it WebView should try again.
+                    return null;
+                }
+            }
+
 //            @Override
+//            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+//
+//                // Check for "recursive request" (are yor header set?)
+//                if (request.getRequestHeaders().containsKey("token"))
+//                    return null;
+//
+//                // Add here your headers (could be good to import original request header here!!!)
+//                Map<String, String> customHeaders = new HashMap<String, String>();
+//
+//                customHeaders.put("token","EAAGm0PX4ZCpsBAIy8j9xa96mT9wQrDyAtIaXErIi4h8YJKHdKqF37v659EZC0wZBVjezqLLrVRkq1C09y96QiIl6xvZCiBoXwu7TLudHDb8pwrSyZA10yZAJzgwHD7ZB7yUSyfPrgILVA7PMm8wJmy4pMfujQYLZADoJFmXHHyzZCitx1zjCTKhCi9wZBQZCTgbRSN3TbwhrJzFNY5C7LkZCuXZAv");
+//                customHeaders.put("Content-Type","application/x-www-form-urlencoded");
+//
+//                view.loadUrl(Utils.getRecsUrl(), customHeaders);
+//
+//                return new WebResourceResponse("", "", null);
+//            }
+
+            //            @Override
 //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                if (Utils.isBlockedContent(url)) {
 //                    return true;
@@ -588,6 +738,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 view.loadUrl("javascript:(function() { " +
                         "document.getElementById('your_id').style.display='none';})()");
             }
+
             @Override
             public void onLoadResource(WebView view, String url) {
                 Log.i("chadtest", url);
@@ -642,8 +793,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webviewMain.getSettings().setJavaScriptEnabled(true);
         webviewMain.getSettings().setGeolocationEnabled(true);
         webviewMain.setWebChromeClient(new GeoWebChromeClient());
-        webviewMain.loadUrl(Utils.getRecsUrl());
-
+//        webviewMain.loadUrl(Utils.getRecsUrl());
+        webviewMain.loadUrl("https://api.gotinder.com/v2/auth/login/facebook?locale=en");
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
         webviewWidth = getWindowManager().getDefaultDisplay().getWidth();
     }
@@ -716,6 +867,32 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             super.onReceivedSslError(view, handler, error);
         }
     }
+
+//    public WebViewClient getWebViewClientWithCustomHeader(){
+//        return new WebViewClient() {
+//            @Override
+//            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+//                try {
+//                    OkHttpClient httpClient = new OkHttpClient();
+//                    Request request = new Request.Builder()
+//                            .url(url.trim())
+//                            .addHeader("token", "EAAGm0PX4ZCpsBAIy8j9xa96mT9wQrDyAtIaXErIi4h8YJKHdKqF37v659EZC0wZBVjezqLLrVRkq1C09y96QiIl6xvZCiBoXwu7TLudHDb8pwrSyZA10yZAJzgwHD7ZB7yUSyfPrgILVA7PMm8wJmy4pMfujQYLZADoJFmXHHyzZCitx1zjCTKhCi9wZBQZCTgbRSN3TbwhrJzFNY5C7LkZCuXZAv")
+//                            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+//                            .build();
+//                    Response response = httpClient.newCall(request).execute();
+//
+//                    return new WebResourceResponse(
+//                            response.header("Content-Type", "application/x-www-form-urlencoded"),
+//                            response.header("content-encoding", "utf-8"),
+//                            response.body().byteStream()
+//                    );
+//                } catch (Exception e) {
+//                    //return null to tell WebView we failed to fetch it WebView should try again.
+//                    return null;
+//                }
+//            }
+//        };
+//    }
 
     private class UriWebViewClient extends WebViewClient {
     }
