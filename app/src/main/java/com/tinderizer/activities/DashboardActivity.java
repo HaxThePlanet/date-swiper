@@ -288,11 +288,6 @@ public class DashboardActivity extends AppCompatActivity {
         if (Utils.isPurchased()) {
             int totalSwipes = getTotalSwipes();
 
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt("total_swipes", totalSwipes + 1);
-            editor.apply();
-            editor.commit();
-
             swipeCount.setText("Total Swipes " + String.valueOf(totalSwipes));
 
             return;
@@ -404,7 +399,6 @@ public class DashboardActivity extends AppCompatActivity {
         editor.commit();
 
         swipeCount.setText("Total Swipes " + String.valueOf(totalSwipes));
-
     }
 }
 

@@ -497,15 +497,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
     }
 
-    /**
-     * Handles the purchase
-     * <p>Note: Notice that for each purchase, we check if signature is valid on the client.
-     * It's recommended to move this check into your backend.
-     * See {@link Security#verifyPurchase(String, String, String)}
-     * </p>
-     *
-     * @param purchase Purchase to be handled
-     */
     private void handlePurchase(Purchase purchase) {
         if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
             Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
@@ -615,6 +606,12 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                     } else {
                         //does
                         numSwipes = numSwipes + 1;
+
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putInt("total_swipes", numSwipes + 1);
+                        editor.apply();
+                        editor.commit();
+
                         EventBus.getDefault().post(new MessageEvents.SwipeEvent(numSwipes));
 
                         //set last success like

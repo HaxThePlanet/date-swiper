@@ -80,7 +80,11 @@ public class Utils {
     }
 
     public static boolean isOutOfLikes() {
-        return outLikes;
+        if (!isPurchased()) {
+            return outLikes;
+        } else {
+            return false;
+        }
     }
 
     public static void setOutOfLikes(boolean likes) {
