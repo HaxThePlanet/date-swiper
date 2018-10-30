@@ -301,20 +301,11 @@ public class DashboardActivity extends AppCompatActivity {
         SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd");
 
         //read date key + count
-//        todaysLikes = encryptedPreferences.getInt(mdformat.format(calendar.getTime()), 0);
-
         todaysLikes = preferences.getInt(mdformat.format(calendar.getTime()), 0);
         todaysLikes += 1;
 
-//        write todays date as key, count as value
-//        encryptedPreferences.edit().putInt(mdformat.format(calendar.getTime()), todaysLikes).apply().apply();
-//        encryptedPreferencesedit().
-
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        SharedPreferences editor = PreferenceManager.getDefaultSharedPreferences(this);
-//        editor.edit().putInt(mdformat.format(calendar.getTime()), todaysLikes).apply();
+        //write todays likes
         String dateTime = mdformat.format(calendar.getTime());
-
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(dateTime, todaysLikes);
         editor.apply();

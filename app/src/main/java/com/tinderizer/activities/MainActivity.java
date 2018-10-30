@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         numSwipes = numSwipes + 1;
 
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putInt("total_swipes", numSwipes + 1);
+                        editor.putInt("total_swipes", getTotalSwipes() + 1);
                         editor.apply();
                         editor.commit();
 
