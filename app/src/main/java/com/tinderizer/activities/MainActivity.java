@@ -562,7 +562,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         cookieManager.setAcceptCookie(true);
 
         webviewMain.setWebViewClient(new WebViewClient() {
-//            @Override
+            //            @Override
 //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                if (Utils.isBlockedContent(url)) {
 //                    return true;
@@ -579,6 +579,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 view.loadUrl("javascript:(function() { " +
                         "document.getElementById('your_id').style.display='none';})()");
             }
+
             @Override
             public void onLoadResource(WebView view, String url) {
                 Log.i("chadtest", url);

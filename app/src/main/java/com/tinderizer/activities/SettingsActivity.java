@@ -556,29 +556,27 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     }
 
     private void setupSwitches() {
-        notifSwitch.setChecked(encryptedPreferences.getBoolean(NOTIF_KEY, true));
-        fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
-        backgroundSwipe.setChecked(encryptedPreferences.getBoolean(BG_KEY, false));
+        //purchased?
+        if (!Utils.isPurchased()) {
+            //no, switches off
+            notifSwitch.setChecked(false);
+            fastSwipeSwitch.setChecked(false);
+            backgroundSwipe.setChecked(false);
+        } else {
+            //yes, last state
+            notifSwitch.setChecked(encryptedPreferences.getBoolean(NOTIF_KEY, true));
+            fastSwipeSwitch.setChecked(encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false));
+            backgroundSwipe.setChecked(encryptedPreferences.getBoolean(BG_KEY, false));
+        }
     }
 
     private void logoutDatingApp() {
-        //schedule restart
-//        try {
-//            Intent mStartActivity = new Intent(SettingsActivity.this, MainActivity.class);
-//            int mPendingIntentId = 123456;
-//            PendingIntent mPendingIntent = PendingIntent.getActivity(SettingsActivity.this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-//            AlarmManager mgr = (AlarmManager) SettingsActivity.this.getSystemService(Context.ALARM_SERVICE);
-//            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, mPendingIntent);
-//        } catch (Exception ex) {
-//        }
-
         //blow cache
         ((ActivityManager) getApplicationContext().getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
 
         //exit
         System.exit(1);
     }
-
 
     @Override
     public void onStop() {
