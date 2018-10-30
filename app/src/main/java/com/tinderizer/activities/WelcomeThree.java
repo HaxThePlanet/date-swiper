@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
+import com.appsee.Appsee;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
@@ -26,6 +28,9 @@ public class WelcomeThree extends AppCompatActivity {
 
     @BindView(R.id.nextThreeButton)
     Button nextThreeButton;
+
+    @BindView(R.id.drawer_layout)
+    RelativeLayout mainLayout;
 
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
@@ -56,6 +61,9 @@ public class WelcomeThree extends AppCompatActivity {
         setContentView(R.layout.activity_welcome_three);
 
         ButterKnife.bind(this);
+
+        //hide login screen
+//        Appsee.markViewAsSensitive(mainLayout);
 
         //logout
         nextThreeButton.setOnClickListener(new View.OnClickListener() {

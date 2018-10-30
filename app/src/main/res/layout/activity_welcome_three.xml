@@ -12,8 +12,8 @@
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
         android:background="@color/bg_grey">
 
         <TextView

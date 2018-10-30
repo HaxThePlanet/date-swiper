@@ -37,6 +37,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
@@ -76,6 +77,9 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     @BindView(R.id.versionTextview)
     TextView versionTextview;
 
+    @BindView(R.id.titleText)
+    TextView titleText;
+
     String deviceID;
     EncryptedPreferences encryptedPreferences;
 
@@ -107,6 +111,8 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+
+        setupFonts();
 
         deviceID = Utils.getDeviceID(this);
         encryptedPreferences = new EncryptedPreferences.Builder(this).withEncryptionPassword(deviceID).build();
@@ -297,6 +303,16 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
         } else {
             buyLayout.setVisibility(View.VISIBLE);
         }
+
+        setTitle();
+    }
+
+    private void setTitle() {
+        if (Utils.isPurchased()) {
+            titleText.setText(getString(R.string.app_name_pro));
+        } else {
+            titleText.setText(getString(R.string.app_name));
+        }
     }
 
     /**
@@ -454,18 +470,18 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
      */
     @Override
     public void onPurchasesUpdated(int resultCode, List<Purchase> purchases) {
-        if (resultCode == BillingClient.BillingResponse.OK) {
-            if (purchases != null) {
-                for (Purchase purchase : purchases) {
-                    handlePurchase(purchase);
-                    //remove for more
-                    break;
-                }
-            } else {
-                EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
-                Utils.setPurchased(false);
+        if (resultCode == BillingClient.BillingResponse.OK && purchases != null) {
+            //OK + PURCHASE
+            for (Purchase purchase : purchases) {
+                handlePurchase(purchase);
+                break;
             }
+        } else if (resultCode == BillingClient.BillingResponse.OK && purchases == null) {
+            //OK, NO PURCHASE YET
+            EventBus.getDefault().post(new MessageEvents.AppPurchased());
+            Utils.setPurchased(true);
         } else if (resultCode == BillingClient.BillingResponse.USER_CANCELED) {
+            //CANCLLED
             EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
             Utils.setPurchased(false);
             Log.i("chadtest", "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
@@ -474,23 +490,17 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
             Utils.setPurchased(false);
             Log.w("chadtest", "onPurchasesUpdated() got unknown resultCode: " + resultCode);
         }
+
+        setTitle();
     }
 
-    /**
-     * Handles the purchase
-     * <p>Note: Notice that for each purchase, we check if signature is valid on the client.
-     * It's recommended to move this check into your backend.
-     * See {@link Security#verifyPurchase(String, String, String)}
-     * </p>
-     *
-     * @param purchase Purchase to be handled
-     */
     private void handlePurchase(Purchase purchase) {
         if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
             Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
 
             EventBus.getDefault().post(new MessageEvents.AppNotPurchased());
             Utils.setPurchased(false);
+            setTitle();
 
             return;
         }
@@ -517,8 +527,8 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
 
         EventBus.getDefault().post(new MessageEvents.AppPurchased());
         Utils.setPurchased(true);
-
         mPurchases.add(purchase);
+        setTitle();
     }
 
     /**
@@ -553,6 +563,14 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvents.AppPurchased event) {
         buyLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void setupFonts() {
+//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+//                .setDefaultFontPath("fonts/fine.otf")
+//                .setFontAttrId(R.attr.fontPath)
+//                .build()
+//        );
     }
 
     private void setupSwitches() {

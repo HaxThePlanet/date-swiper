@@ -54,6 +54,10 @@ public class DashboardActivity extends AppCompatActivity {
     @BindView(R.id.swipeProgress)
     ProgressBar swipeProgress;
     SharedPreferences preferences;
+
+    @BindView(R.id.titleText)
+    TextView titleText;
+
     private AdView mAdView;
     private int todaysLikes;
     private String deviceID;
@@ -84,11 +88,11 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void setupFonts() {
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/fine.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        );
+//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+//                .setDefaultFontPath("fonts/fine.otf")
+//                .setFontAttrId(R.attr.fontPath)
+//                .build()
+//        );
     }
 
     @Override
@@ -106,6 +110,9 @@ public class DashboardActivity extends AppCompatActivity {
         adView.getVideoController().play();
 
         EventBus.getDefault().post(new MessageEvents.StartWebview());
+
+        setTitle();
+
         super.onResume();
     }
 
@@ -119,6 +126,7 @@ public class DashboardActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setupFonts();
+        setTitle();
 
         EventBus.getDefault().register(this);
 
@@ -264,18 +272,18 @@ public class DashboardActivity extends AppCompatActivity {
         if (Utils.isPurchased()) {
             swipeProgress.setVisibility(View.INVISIBLE);
             adView.setVisibility(View.INVISIBLE);
-
-            int totalSwipes = getTotalSwipes();
-
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt("total_swipes", totalSwipes + 1);
-            editor.apply();
-            editor.commit();
-
-            swipeCount.setText("Total Swipes " + String.valueOf(totalSwipes));
+            swipeCount.setText("Total Swipes " + String.valueOf(getTotalSwipes()));
         } else {
             swipeProgress.setVisibility(View.VISIBLE);
             adView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setTitle() {
+        if (Utils.isPurchased()) {
+            titleText.setText(getString(R.string.app_name_pro));
+        } else {
+            titleText.setText(getString(R.string.app_name));
         }
     }
 
@@ -381,15 +389,7 @@ public class DashboardActivity extends AppCompatActivity {
         Utils.setPurchased(true);
         swipeProgress.setVisibility(View.INVISIBLE);
         adView.setVisibility(View.INVISIBLE);
-
-        //set text
-        int totalSwipes = getTotalSwipes();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("total_swipes", totalSwipes + 1);
-        editor.apply();
-        editor.commit();
-
-        swipeCount.setText("Total Swipes " + String.valueOf(totalSwipes));
+        swipeCount.setText("Total Swipes " + String.valueOf(getTotalSwipes()));
     }
 }
 

@@ -50,6 +50,7 @@ import com.tinderizer.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jcodec.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -333,8 +334,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         customHandler.postDelayed(updateTimerThread, 0);
 
         setupAnalytics();
-
-
     }
 
     private void setupAnalytics() {
@@ -608,6 +607,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         //does
                         numSwipes = numSwipes + 1;
 
+                        //write swipe to disk
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putInt("total_swipes", getTotalSwipes() + 1);
                         editor.apply();
