@@ -593,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                     }
 
                     //send escape to close cookies
-                    Utils.sendEscape(webviewMain);
+//                    Utils.sendEscape(webviewMain);
                 }
 
                 //like happened
