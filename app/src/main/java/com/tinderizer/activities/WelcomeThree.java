@@ -34,7 +34,6 @@ public class WelcomeThree extends AppCompatActivity {
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
 
-
     @Override
     public void onStop() {
         super.onStop();
