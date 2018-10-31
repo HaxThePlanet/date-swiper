@@ -8,4 +8,8 @@
 
     <string name="help_two_title">Ready to go!</string>
     <string name="help_two_msg">Click the play button to begin</string>
+
+    <string name="help_chat_button_text">Help | Chat</string>
+
+    <string name="zendesk_chat_api_key">67OpWUTzJCaRXy1ZVt1D1R5elCve160V</string>
 </resources>

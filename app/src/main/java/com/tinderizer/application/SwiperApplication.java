@@ -5,6 +5,7 @@ import android.app.Application;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.tinderizer.R;
+import com.zopim.android.sdk.api.ZopimChat;
 
 /**
  * This is a subclass of {@link Application} used to provide shared objects for this app, such as
@@ -20,6 +21,8 @@ public class SwiperApplication extends Application {
         super.onCreate();
 
         sAnalytics = GoogleAnalytics.getInstance(this);
+
+        setupZendesk();
     }
 
     /**
@@ -35,4 +38,10 @@ public class SwiperApplication extends Application {
 
         return sTracker;
     }
+
+    //sets up zendesk
+    private void setupZendesk() {
+        ZopimChat.init(getString(R.string.zendesk_chat_api_key));
+    }
 }
+

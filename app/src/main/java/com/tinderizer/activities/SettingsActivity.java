@@ -27,6 +27,7 @@ import com.tinderizer.BuildConfig;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
 import com.tinderizer.utils.Utils;
+import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -75,6 +76,9 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
 
     @BindView(R.id.versionTextview)
     TextView versionTextview;
+
+    @BindView(R.id.helpChatButton)
+    Button helpChatButton;
 
     @BindView(R.id.titleText)
     TextView titleText;
@@ -284,6 +288,13 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
             @Override
             public void onClick(View v) {
                 initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+            }
+        });
+
+        helpChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ZopimChatActivity.class));
             }
         });
 
