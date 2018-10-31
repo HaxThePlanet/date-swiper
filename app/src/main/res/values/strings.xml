@@ -2,4 +2,10 @@
     <string name="app_name_pro">Date Swiper Pro</string>
     <string name="app_name">Date Swiper</string>
     <string name="ga_trackingId" translatable="false">UA-127402294-1</string>
+
+    <string name="help_one_title">Close all pop-ups</string>
+    <string name="help_one_msg">Click swipe button</string>
+
+    <string name="help_two_title">Ready to go!</string>
+    <string name="help_two_msg">Click the play button to begin</string>
 </resources>

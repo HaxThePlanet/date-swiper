@@ -7,13 +7,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -32,10 +37,9 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements OnShowcaseEventListener {
     private static final int freeLikesCount = 100;
     private static boolean showingOutLikesAlert;
     @BindView(R.id.swipeCount)
@@ -57,6 +61,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     @BindView(R.id.titleText)
     TextView titleText;
+
+    ViewTarget targetTwo;
+    ShowcaseView svTwo;
 
     private AdView mAdView;
     private int todaysLikes;
@@ -124,6 +131,8 @@ public class DashboardActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ButterKnife.bind(this);
+
+        targetTwo = new ViewTarget(R.id.playPauseImg, this);
 
         setupFonts();
         setTitle();
@@ -277,6 +286,11 @@ public class DashboardActivity extends AppCompatActivity {
             swipeProgress.setVisibility(View.VISIBLE);
             adView.setVisibility(View.VISIBLE);
         }
+
+        if (getTotalSwipes() == 0) {
+            //yes
+            showSwipeHelpTwo();
+        }
     }
 
     private void setTitle() {
@@ -285,6 +299,30 @@ public class DashboardActivity extends AppCompatActivity {
         } else {
             titleText.setText(getString(R.string.app_name));
         }
+    }
+
+    private void showSwipeHelpTwo() {
+        if (svTwo != null && svTwo.isShowing()) return;
+
+        RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lps.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        lps.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        //int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+        //lps.setMargins(margin, margin, margin, margin);
+
+        svTwo = new ShowcaseView.Builder(DashboardActivity.this)
+                //.withMaterialShowcase()
+                .withNewStyleShowcase()
+                .setTarget(targetTwo)
+                .setContentTitle(R.string.help_two_title)
+                .setContentText(R.string.help_two_msg)
+                .setStyle(R.style.ShowcaseView)
+                .setShowcaseEventListener(DashboardActivity.this)
+                //.replaceEndButton(R.layout.view_custom_button)
+                .build();
+
+        svTwo.setButtonPosition(lps);
+        svTwo.show();
     }
 
     private int getTotalSwipes() {
@@ -390,6 +428,24 @@ public class DashboardActivity extends AppCompatActivity {
         swipeProgress.setVisibility(View.INVISIBLE);
         adView.setVisibility(View.INVISIBLE);
         swipeCount.setText("Total Swipes " + String.valueOf(getTotalSwipes()));
+    }
+
+    @Override
+    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+        //buttonBlocked.setEnabled(false);
+    }
+
+    @Override
+    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+    }
+
+    @Override
+    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+    }
+
+    @Override
+    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
     }
 }
 

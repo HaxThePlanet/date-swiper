@@ -20,4 +20,25 @@
 
     </WebView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/targetHitView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/webview"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:text="TEST"
+            android:visibility="invisible" />
+    </LinearLayout>
+
 </RelativeLayout>

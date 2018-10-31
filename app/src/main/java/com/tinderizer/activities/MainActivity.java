@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -29,6 +30,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -39,6 +42,9 @@ import com.appsee.Appsee;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LevelEndEvent;
 import com.crashlytics.android.answers.LevelStartEvent;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
@@ -50,7 +56,6 @@ import com.tinderizer.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jcodec.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +69,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
 
-public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener, View.OnTouchListener {
+public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener, View.OnTouchListener, OnShowcaseEventListener {
     // Default value of mBillingClientResponseCode until BillingManager was not yeat initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
     private static final int freeLikesCount = 100;
@@ -80,8 +85,13 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private final String BG_KEY = "BG_KEY";
     private final int REQUEST_FINE_LOCATION_CODE = 0;
     private final List<Purchase> mPurchases = new ArrayList<>();
+
     @BindView(R.id.webview)
     WebView webviewMain;
+
+    @BindView(R.id.targetHitView)
+    TextView targetHitView;
+
     SharedPreferences preferences;
     private Tracker googleTracker;
     private Handler swipeHandler = new Handler();
@@ -103,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private int fastMinSpeed = 250;
     private int fastMaxSpeed = 1500;
 
+    ViewTarget targetOne;
+    ShowcaseView svOne;
+
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
 
@@ -119,6 +132,25 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private int checkBillingHowMany = 3;
     private int haveCheckedBillingTimes = 0;
     private int billingCheckEachTimeDelay = 10000;
+
+    @Override
+    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+        //buttonBlocked.setEnabled(false);
+    }
+
+    @Override
+    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+    }
+
+    @Override
+    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+    }
+
+    @Override
+    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+    }
+
 
     private Runnable checkPurchasesThread = new Runnable() {
         public void run() {
@@ -554,6 +586,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
 
+        targetOne = new ViewTarget(R.id.targetHitView, this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             cookieManager.setAcceptThirdPartyCookies(webviewMain, true);
         }
@@ -590,17 +624,37 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                     //close loading screen
                     EventBus.getDefault().post(new MessageEvents.CloseLoading());
 
-                    if (dashboardUp == false) {
-                        dashboardUp = true;
+                    if (getTotalSwipes() == 0) {
+                        showSwipeHelpOne();
+                    } else {
+                        if (dashboardUp == false) {
+                            //hide first tooltip
+                            if (svOne != null && svOne.isShowing())
+                                svOne.hide();
 
-                        //show dashboard
-                        Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
-                        startActivity(myIntent);
+                            //show dashboard
+                            Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
+                            startActivity(myIntent);
+
+                            dashboardUp = true;
+                        }
                     }
                 }
 
                 //like happened
                 if (url.contains("/like/")) {
+                    if (dashboardUp == false) {
+                        //hide first tooltip
+                        if (svOne != null && svOne.isShowing())
+                            svOne.hide();
+
+                        //show dashboard
+                        Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
+                        startActivity(myIntent);
+
+                        dashboardUp = true;
+                    }
+
                     if (!likeHashMap.contains(url)) {
                         likeHashMap.add(url);
                     } else {
@@ -645,6 +699,32 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
         webviewWidth = getWindowManager().getDefaultDisplay().getWidth();
     }
+
+    private void showSwipeHelpOne() {
+        if (svOne != null && svOne.isShowing()) return;
+
+        RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lps.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        lps.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        //int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+        //lps.setMargins(margin, margin, margin, margin);
+
+        svOne = new ShowcaseView.Builder(MainActivity.this)
+                //.withMaterialShowcase()
+                .withNewStyleShowcase()
+                .setTarget(targetOne)
+                .setContentTitle(R.string.help_one_title)
+                .setContentText(R.string.help_one_msg)
+                .setStyle(R.style.ShowcaseView)
+                .setShowcaseEventListener(MainActivity.this)
+                //.replaceEndButton(R.layout.view_custom_button)
+                .build();
+
+        svOne.setButtonPosition(lps);
+        svOne.show();
+    }
+
+
 
     private boolean isFastSwipeEnabled() {
         return encryptedPreferences.getBoolean(FAST_SWIPE_KEY, false);
