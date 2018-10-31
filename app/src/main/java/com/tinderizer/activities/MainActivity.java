@@ -567,11 +567,13 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 //
 //                return false;
 //            }
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                //send escape to close cookies
-//                super.onPageFinished(view, url);
-//            }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //send ENTER to close cookies
+                Utils.sendEnter(webviewMain);
+
+                super.onPageFinished(view, url);
+            }
 
             @Override
             public void onLoadResource(WebView view, String url) {
@@ -592,8 +594,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         startActivity(myIntent);
                     }
 
-                    //send escape to close cookies
-//                    Utils.sendEscape(webviewMain);
+                    //send ENTER to close cookies
+                    Utils.sendEnter(webviewMain);
                 }
 
                 //like happened

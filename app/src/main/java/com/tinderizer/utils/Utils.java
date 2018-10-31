@@ -126,9 +126,16 @@ public class Utils {
         sendEscape(wv);
     }
 
+    //sends escape
     public static void sendEscape(WebView wv) {
         wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE));
         wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE));
+    }
+
+    //sends enter
+    public static void sendEnter(WebView wv) {
+        wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
     }
 
     //swipe event
