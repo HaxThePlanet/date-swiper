@@ -14,6 +14,7 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 
 android {
@@ -23,8 +24,8 @@ android {
         applicationId "com.tinderizer"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 29
-        versionName "1.0.0.29"
+        versionCode 30
+        versionName "1.0.0.30"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -66,6 +67,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') { transitive = true }
     implementation 'com.android.billingclient:billing:1.1'
     implementation 'com.appsee:appsee-android:+'
+    implementation group: 'com.zopim.android', name: 'sdk', version: '1.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
