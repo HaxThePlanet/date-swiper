@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.appsee.Appsee;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
@@ -34,7 +33,6 @@ public class WelcomeThree extends AppCompatActivity {
 
     private String deviceID;
     private EncryptedPreferences encryptedPreferences;
-
 
     @Override
     public void onStop() {

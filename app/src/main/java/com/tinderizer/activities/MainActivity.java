@@ -50,7 +50,6 @@ import com.tinderizer.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jcodec.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -560,8 +559,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         cookieManager.setAcceptCookie(true);
 
-        webviewMain.setWebViewClient(new WebViewClient() {
-            //            @Override
+        webviewMain.setWebViewClient(new WebViewClient() {//@Override
 //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                if (Utils.isBlockedContent(url)) {
 //                    return true;
@@ -569,15 +567,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 //
 //                return false;
 //            }
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                // hide element by class name
-                view.loadUrl("javascript:(function() { " +
-                        "document.getElementsByClassName('your_class_name')[0].style.display='none'; })()");
-                // hide element by id
-                view.loadUrl("javascript:(function() { " +
-                        "document.getElementById('your_id').style.display='none';})()");
-            }
+//            @Override
+//            public void onPageFinished(WebView view, String url) {
+//                //send escape to close cookies
+//                super.onPageFinished(view, url);
+//            }
 
             @Override
             public void onLoadResource(WebView view, String url) {
@@ -597,6 +591,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
                         startActivity(myIntent);
                     }
+
+                    //send escape to close cookies
+                    Utils.sendEscape(webviewMain);
                 }
 
                 //like happened

@@ -123,20 +123,12 @@ public class Utils {
         sendSwipeGesture(wv, webviewHeight, webviewWidth);
 
         //send keep swiping
-        sendKeepSwipingGesture(wv, webviewHeight, webviewWidth);
+        sendEscape(wv);
     }
 
-    //keep swiping button is wv h - 65%
-    private static void sendKeepSwipingGesture(WebView wv, float webviewHeight, float webviewWidth) {
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis() + 10;
-
-        //wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, webviewWidth / 2, webviewHeight * 0.59f, 0));
-        //wv.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, webviewWidth / 2, webviewHeight * 0.59f, 0));
-
+    public static void sendEscape(WebView wv) {
         wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE));
         wv.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE));
-
     }
 
     //swipe event
