@@ -104,6 +104,21 @@
         android:textColor="@android:color/white"
         android:textSize="18dp" />
 
+    <TextView
+        android:id="@+id/welcomeText7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/welcomeText4"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="100 free swipes per day"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="18dp" />
+
     <Button
         android:id="@+id/nextOneButton"
         android:layout_width="match_parent"

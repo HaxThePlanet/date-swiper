@@ -68,6 +68,14 @@
           }
         },
         {
+          "client_id": "947093893255-p6qcvgo3d31464s1a1q26a6b6ekpo2ub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tinderizer",
+            "certificate_hash": "8152410e48277903b2c21df0413582e28b8d39b2"
+          }
+        },
+        {
           "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
           "client_type": 3
         }
