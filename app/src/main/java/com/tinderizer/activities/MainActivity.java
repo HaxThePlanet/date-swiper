@@ -593,9 +593,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
                         startActivity(myIntent);
                     }
-
-                    //send ENTER to close cookies
-                    Utils.sendEnter(webviewMain);
                 }
 
                 //like happened
