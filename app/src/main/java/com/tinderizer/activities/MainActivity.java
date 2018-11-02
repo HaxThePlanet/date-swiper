@@ -29,6 +29,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -219,10 +220,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
 
         webviewMain.loadUrl(Utils.getRecsUrl());
-    }
-
-    private int getTotalSwipes() {
-        return preferences.getInt("total_swipes", 0);
     }
 
     @Override
@@ -560,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         cookieManager.setAcceptCookie(true);
 
         webviewMain.setWebViewClient(new WebViewClient() {//@Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                if (Utils.isBlockedContent(url)) {
 //                    return true;
 //                }
@@ -586,17 +583,20 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                     //close loading screen
                     EventBus.getDefault().post(new MessageEvents.CloseLoading());
 
-                    if (dashboardUp == false) {
-                        dashboardUp = true;
+                    //only show dashboard if they swipe once
+                    if (getTotalSwipes() > 0) {
+                        if (dashboardUp == false) {
+                            dashboardUp = true;
 
-                        //show dashboard
-                        Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
-                        startActivity(myIntent);
+                            //show dashboard
+                            Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
+                            startActivity(myIntent);
+                        }
                     }
                 }
 
                 //like happened
-                if (url.contains("/like/")) {
+                if (url.contains("/like/") || url.contains("/pass/")) {
                     if (!likeHashMap.contains(url)) {
                         likeHashMap.add(url);
                     } else {
@@ -615,6 +615,17 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         Utils.setSwipeTime(SystemClock.uptimeMillis());
 
                         Log.i("chadlike", url);
+                    }
+
+                    //only show dashboard if they swipe once
+                    if (getTotalSwipes() > 0) {
+                        if (dashboardUp == false) {
+                            dashboardUp = true;
+
+                            //show dashboard
+                            Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
+                            startActivity(myIntent);
+                        }
                     }
                 }
 
@@ -640,6 +651,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
         webviewWidth = getWindowManager().getDefaultDisplay().getWidth();
+    }
+
+    private int getTotalSwipes() {
+        return preferences.getInt("total_swipes", 0);
     }
 
     private boolean isFastSwipeEnabled() {

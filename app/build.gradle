@@ -24,8 +24,8 @@ android {
         applicationId "com.tinderizer"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 34
-        versionName "1.0.0.34"
+        versionCode 37
+        versionName "1.0.0.36"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
