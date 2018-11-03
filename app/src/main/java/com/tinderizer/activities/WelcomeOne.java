@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.crashlytics.android.Crashlytics;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
+import com.tinderizer.utils.DateTimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,6 +63,8 @@ public class WelcomeOne extends AppCompatActivity {
                 finish();
             }
         });
+
+       DateTimeUtils.getTimeUntilMidnight();
     }
 
     @Override

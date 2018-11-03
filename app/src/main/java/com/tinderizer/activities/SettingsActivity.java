@@ -206,7 +206,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                         android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                         builder
                                 .setTitle("Upgrade")
-                                .setMessage("Upgrade to paid version for faster swiping")
+                                .setMessage("Upgrade to pro version for faster swiping?")
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -237,7 +237,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                         android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                         builder
                                 .setTitle("Upgrade")
-                                .setMessage("Upgrade to paid version for background swiping")
+                                .setMessage("Upgrade to pro version for background swiping")
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {

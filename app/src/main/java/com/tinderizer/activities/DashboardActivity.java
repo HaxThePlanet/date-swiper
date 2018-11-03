@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -23,6 +21,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.tinderizer.R;
 import com.tinderizer.events.MessageEvents;
+import com.tinderizer.utils.DateTimeUtils;
 import com.tinderizer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -142,9 +141,7 @@ public class DashboardActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         todaysLikes = preferences.getInt(dateTime, 0);
 
-//        todaysLikes = encryptedPreferences.getInt(dateTime, 0);
-
-        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes));
+        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes) + " (resets in " + DateTimeUtils.getTimeUntilMidnight() + ")");
         swipeProgress.setProgress(freeLikesCount - todaysLikes);
 
         if (!Utils.isPurchased()) {
@@ -211,15 +208,12 @@ public class DashboardActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         showingOutLikesAlert = false;
 
+                                        dialog.dismiss();
+
                                         //show settings
                                         Intent myIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
                                         myIntent.putExtra("open_upgrade", "open_upgrade");
                                         startActivity(myIntent);
-
-                                        //open subscribe
-
-
-                                        dialog.dismiss();
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -246,15 +240,12 @@ public class DashboardActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         showingOutLikesAlert = false;
 
+                                        dialog.dismiss();
+
                                         //show settings
                                         Intent myIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
                                         myIntent.putExtra("open_upgrade", "open_upgrade");
                                         startActivity(myIntent);
-
-                                        //open subscribe
-
-
-                                        dialog.dismiss();
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -302,7 +293,7 @@ public class DashboardActivity extends AppCompatActivity {
             return;
         }
 
-        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes));
+        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes) + " (resets in " + DateTimeUtils.getTimeUntilMidnight() + ")");
         swipeProgress.setProgress(freeLikesCount - todaysLikes);
 
         //get todays date
@@ -322,7 +313,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         if (todaysLikes >= freeLikesCount) {
             //set text/progress
-            swipeCount.setText("Free Swipes Remaining " + String.valueOf(0));
+            swipeCount.setText("Free Swipes Remaining " + String.valueOf(0) + " (resets in " + DateTimeUtils.getTimeUntilMidnight() + ")");
             swipeProgress.setProgress(0);
 
             //save
@@ -352,15 +343,12 @@ public class DashboardActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 showingOutLikesAlert = false;
 
+                                dialog.dismiss();
+
                                 //show settings
                                 Intent myIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
                                 myIntent.putExtra("open_upgrade", "open_upgrade");
                                 startActivity(myIntent);
-
-                                //open subscribe
-
-
-                                dialog.dismiss();
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -382,7 +370,7 @@ public class DashboardActivity extends AppCompatActivity {
         Utils.setPurchased(false);
         swipeProgress.setVisibility(View.VISIBLE);
         adView.setVisibility(View.VISIBLE);
-        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes));
+        swipeCount.setText("Free Swipes Remaining " + String.valueOf(freeLikesCount - todaysLikes) + " (resets in " + DateTimeUtils.getTimeUntilMidnight() + ")");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
