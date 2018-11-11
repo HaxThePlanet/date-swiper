@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Date Swiper "
+            android:text="Tinder Swiper "
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="24dp" />
@@ -54,7 +54,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="25dp"
         android:gravity="center_vertical|center_horizontal"
-        android:text="Let us swipe Tinder for you"
+        android:text="Tinder Swiper"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="28dp" />

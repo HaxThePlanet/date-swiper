@@ -131,7 +131,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Change location?")
-                        .setMessage("Date Swiper will exit, you will need to change your location in the dating app")
+                        .setMessage("Tinder Swiper will exit, you will need to change your location in the Tinder app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -144,7 +144,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                                 } else {
                                     AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
                                     alert.setTitle("");
-                                    alert.setMessage("Dating app not installed");
+                                    alert.setMessage("The Tinder app is not installed");
                                     alert.setPositiveButton("OK", null);
                                     alert.show();
                                 }
@@ -162,7 +162,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Are you sure?")
-                        .setMessage("Logout of Date Swiper? Date Swiper will close, you will need to restart the app")
+                        .setMessage("Logout of Tinder Swiper? Tinder Swiper will close, you will need to restart the app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
