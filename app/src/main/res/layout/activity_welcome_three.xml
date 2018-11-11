@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/bg_grey"
     android:fitsSystemWindows="true">
 
     <RelativeLayout
@@ -23,7 +23,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:text="Tinder Swiper "
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="24dp" />
 
     </RelativeLayout>
@@ -44,7 +44,7 @@
             android:layout_height="150dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@drawable/logo" />
+            app:srcCompat="@drawable/logo_size_icon_invert" />
     </LinearLayout>
 
     <RelativeLayout
@@ -66,7 +66,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:text="Last Step!"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="28dp" />
 
         <TextView
@@ -79,7 +79,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:text="You will need to login to Tinder.com"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="18dp" />
 
         <TextView
@@ -92,7 +92,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:text="Happy swiping!"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="18dp" />
 
         <Button

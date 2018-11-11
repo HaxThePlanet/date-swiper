@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    android:background="@color/bg_grey"
     android:fitsSystemWindows="true"
     android:gravity="bottom">
 
@@ -23,7 +24,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:text="Tinder Swiper "
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="24dp" />
 
     </RelativeLayout>
@@ -45,7 +46,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="Fast Swiping"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <Switch
@@ -118,7 +119,7 @@
             android:gravity="center_vertical"
             android:text="Faster Swipes"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <TextView
@@ -128,7 +129,7 @@
             android:gravity="center_vertical"
             android:text="No Ads"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <TextView
@@ -138,7 +139,7 @@
             android:gravity="center_vertical"
             android:text="Unlimited Swipes"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <Button
@@ -192,7 +193,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:text="1.0.0.0" />
+            android:text="1.0.0.0"
+            android:textColor="@color/text_foreground" />
     </LinearLayout>
 
     <View
@@ -220,7 +222,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="Background Swipe"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <Switch
@@ -250,7 +252,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="Change Location"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
         <ImageButton
