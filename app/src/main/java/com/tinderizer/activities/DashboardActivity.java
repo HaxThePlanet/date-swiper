@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.toptas.fancyshowcase.FancyShowCaseView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class DashboardActivity extends AppCompatActivity {

@@ -27,6 +27,13 @@
             android:textColor="@color/text_foreground"
             android:textSize="24dp" />
 
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha=".3"
+            app:srcCompat="@drawable/logo_size_icon_invert" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -49,8 +56,9 @@
             android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/fastSwipeSwitch"
+            android:theme="@style/SwitchThemeOverlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textEnd" />
@@ -84,8 +92,9 @@
             android:textColor="@android:color/white"
             android:textSize="15dp" />
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/notifSwitch"
+            android:theme="@style/SwitchThemeOverlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textEnd" />
@@ -225,8 +234,9 @@
             android:textColor="@color/text_foreground"
             android:textSize="15dp" />
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/backgroundSwipe"
+            android:theme="@style/SwitchThemeOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"

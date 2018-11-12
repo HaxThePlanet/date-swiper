@@ -18,4 +18,15 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
+    <style name="SwitchThemeOverlay" parent="">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">#00c853</item>
+
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/text_foreground</item>
+
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">@color/text_foreground
+        </item>
+    </style>
 </resources>

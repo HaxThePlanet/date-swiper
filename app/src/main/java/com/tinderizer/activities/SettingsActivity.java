@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.billingclient.api.BillingClient;
@@ -63,16 +62,16 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     Button upgradeButton;
 
     @BindView(R.id.notifSwitch)
-    Switch notifSwitch;
+    android.support.v7.widget.SwitchCompat notifSwitch;
 
     @BindView(R.id.buy_layout)
     LinearLayout buyLayout;
 
     @BindView(R.id.fastSwipeSwitch)
-    Switch fastSwipeSwitch;
+    android.support.v7.widget.SwitchCompat fastSwipeSwitch;
 
     @BindView(R.id.backgroundSwipe)
-    Switch backgroundSwipe;
+    android.support.v7.widget.SwitchCompat backgroundSwipe;
 
     @BindView(R.id.versionTextview)
     TextView versionTextview;

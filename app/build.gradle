@@ -24,8 +24,8 @@ android {
         applicationId "com.tinderizer"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 37
-        versionName "1.0.0.36"
+        versionCode 39
+        versionName "1.0.0.39"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -74,6 +74,7 @@ dependencies {
     implementation 'com.appsee:appsee-android:+'
     implementation group: 'com.zopim.android', name: 'sdk', version: '1.4.0'
     testImplementation "org.robolectric:robolectric:4.0.1"
+    implementation 'com.github.faruktoptas:FancyShowCaseView:1.1.1'
 
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

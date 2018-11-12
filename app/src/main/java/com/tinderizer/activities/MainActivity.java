@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -60,6 +61,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.toptas.fancyshowcase.FancyShowCaseView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
@@ -592,6 +594,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                             Intent myIntent = new Intent(MainActivity.this, DashboardActivity.class);
                             startActivity(myIntent);
                         }
+                    } else {
+                        double x = webviewWidth * 0.75;
+                        double y = webviewHeight * 0.98;
+
+
+                        new FancyShowCaseView.Builder(MainActivity.this)
+                                .focusCircleAtPosition((int) x, (int) y, 100)
+                                .title("Click the like button")
+                                .build()
+                                .show();
                     }
                 }
 
@@ -633,6 +645,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 if (url.contains("buckets")) {
                     //close loading screen
                     EventBus.getDefault().post(new MessageEvents.CloseLoading());
+
+                    double x = webviewWidth * 0.55;
+                    double y = webviewHeight * 0.80;
+                    double boxHeight = webviewHeight * 0.25;
+
+                    new FancyShowCaseView.Builder(MainActivity.this)
+                            .focusRectAtPosition((int) x, (int) y, webviewWidth, (int) boxHeight)
+                            .title("Login to Tinder.com")
+                            .build()
+                            .show();
                 }
             }
         });
@@ -647,6 +669,19 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         webviewMain.getSettings().setJavaScriptEnabled(true);
         webviewMain.getSettings().setGeolocationEnabled(true);
         webviewMain.setWebChromeClient(new GeoWebChromeClient());
+
+        ViewTreeObserver viewTreeObserver = webviewMain.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    webviewMain.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    webviewWidth = webviewMain.getWidth();
+                    webviewHeight = webviewMain.getHeight();
+                }
+            });
+        }
+
         webviewMain.loadUrl(Utils.getRecsUrl());
 
         webviewHeight = getWindowManager().getDefaultDisplay().getHeight();
