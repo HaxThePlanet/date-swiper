@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,8 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.tinderizer.R;
-import com.tinderizer.events.MessageEvents;
+import com.tswiper.R;
+import com.tswiper.events.MessageEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

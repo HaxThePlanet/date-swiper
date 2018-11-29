@@ -1,4 +1,4 @@
-package com.tinderizer.analytics;
+package com.tswiper.analytics;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.tinderizer.utils;
+package com.tswiper.utils;
 
 import android.content.Context;
 import android.os.SystemClock;

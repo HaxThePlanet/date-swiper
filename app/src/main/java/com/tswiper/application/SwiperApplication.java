@@ -1,10 +1,10 @@
-package com.tinderizer.application;
+package com.tswiper.application;
 
 import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.tinderizer.R;
+import com.tswiper.R;
 import com.zopim.android.sdk.api.ZopimChat;
 
 /**

@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name_pro">Tinder Swiper Pro</string>
-    <string name="app_name">Tinder Swiper</string>
+    <string name="app_name_pro">Date Swiper Pro</string>
+    <string name="app_name">Date Swiper</string>
     <string name="ga_trackingId" translatable="false">UA-127402294-1</string>
 
     <string name="help_one_title">Close all pop-ups</string>
@@ -9,7 +9,14 @@
     <string name="help_two_title">Ready to go!</string>
     <string name="help_two_msg">Click the play button to begin</string>
 
-    <string name="help_chat_button_text">Help | Chat</string>
+    <string name="help_chat_button_text">Help</string>
 
     <string name="zendesk_chat_api_key">67OpWUTzJCaRXy1ZVt1D1R5elCve160V</string>
+
+    <string name="inapp_purchase_id">tswiper_pro</string>
+
+    <string name="admob_app_id">ca-app-pub-5336818452987335~8780622973</string>
+    <string name="admob_ad_unit">ca-app-pub-5336818452987335/2028346511</string>
+
+
 </resources>

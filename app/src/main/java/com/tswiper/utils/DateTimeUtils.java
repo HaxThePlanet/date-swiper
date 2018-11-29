@@ -1,4 +1,4 @@
-package com.tinderizer.utils;
+package com.tswiper.utils;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;

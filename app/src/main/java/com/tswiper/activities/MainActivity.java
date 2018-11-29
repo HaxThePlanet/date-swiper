@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -44,10 +44,10 @@ import com.crashlytics.android.answers.LevelStartEvent;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-import com.tinderizer.R;
-import com.tinderizer.application.SwiperApplication;
-import com.tinderizer.events.MessageEvents;
-import com.tinderizer.utils.Utils;
+import com.tswiper.R;
+import com.tswiper.application.SwiperApplication;
+import com.tswiper.events.MessageEvents;
+import com.tswiper.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

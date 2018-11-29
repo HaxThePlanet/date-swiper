@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 
-import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-import com.tinderizer.R;
-import com.tinderizer.events.MessageEvents;
-import com.tinderizer.utils.Utils;
+import com.crashlytics.android.Crashlytics;
+import com.tswiper.R;
+import com.tswiper.events.MessageEvents;
+import com.tswiper.utils.DateTimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -19,20 +18,12 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class WelcomeThree extends AppCompatActivity {
-    private final String FIRST_RUN_KEY = "FIRST_RUN_KEY";
-    private final int REQUEST_FINE_LOCATION_CODE = 0;
-
-    @BindView(R.id.nextThreeButton)
-    Button nextThreeButton;
-
-    @BindView(R.id.drawer_layout)
-    RelativeLayout mainLayout;
-
-    private String deviceID;
-    private EncryptedPreferences encryptedPreferences;
+public class WelcomeOne extends AppCompatActivity {
+    @BindView(R.id.nextOneButton)
+    Button nextOneButton;
 
     @Override
     public void onStop() {
@@ -56,38 +47,29 @@ public class WelcomeThree extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome_three);
+        setContentView(R.layout.activity_welcome_one);
 
         ButterKnife.bind(this);
 
-        //hide login screen
-//        Appsee.markViewAsSensitive(mainLayout);
+        Fabric.with(this, new Crashlytics());
 
         //logout
-        nextThreeButton.setOnClickListener(new View.OnClickListener() {
+        nextOneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deviceID = Utils.getDeviceID(getApplicationContext());
-                encryptedPreferences = new EncryptedPreferences.Builder(getApplicationContext()).withEncryptionPassword(deviceID).build();
-
-                //not first run
-                encryptedPreferences.edit()
-                        .putBoolean(FIRST_RUN_KEY, false)
-                        .apply();
-
-                Intent myIntent = new Intent(WelcomeThree.this, MainActivity.class);
+                Intent myIntent = new Intent(WelcomeOne.this, WelcomeTwo.class);
                 startActivity(myIntent);
 
                 finish();
             }
         });
 
+       DateTimeUtils.getTimeUntilMidnight();
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
-
 }
 

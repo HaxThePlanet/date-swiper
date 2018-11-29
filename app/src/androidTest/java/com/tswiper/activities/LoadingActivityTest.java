@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.tinderizer.R;
+import com.tswiper.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

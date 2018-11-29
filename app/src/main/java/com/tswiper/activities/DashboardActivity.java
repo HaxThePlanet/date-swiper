@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,10 +19,10 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-import com.tinderizer.R;
-import com.tinderizer.events.MessageEvents;
-import com.tinderizer.utils.DateTimeUtils;
-import com.tinderizer.utils.Utils;
+import com.tswiper.R;
+import com.tswiper.events.MessageEvents;
+import com.tswiper.utils.DateTimeUtils;
+import com.tswiper.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -146,10 +146,10 @@ public class DashboardActivity extends AppCompatActivity {
         swipeProgress.setProgress(freeLikesCount - todaysLikes);
 
         if (!Utils.isPurchased()) {
-            MobileAds.initialize(this, "ca-app-pub-5336818452987335/2176794052");
+            MobileAds.initialize(this, getString(R.string.admob_ad_unit));
 
             mAdView = findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();
+            // AdRequest adRequest = new AdRequest.Builder().addTestDevice("4E09B12D5BD9AFF27E5EB2C6D3EFB27D").build();
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
 

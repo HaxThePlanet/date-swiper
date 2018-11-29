@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -22,10 +22,10 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-import com.tinderizer.BuildConfig;
-import com.tinderizer.R;
-import com.tinderizer.events.MessageEvents;
-import com.tinderizer.utils.Utils;
+import com.tswiper.BuildConfig;
+import com.tswiper.R;
+import com.tswiper.events.MessageEvents;
+import com.tswiper.utils.Utils;
 import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Change location?")
-                        .setMessage("Tinder Swiper will exit, you will need to change your location in the Tinder app")
+                        .setMessage("Date Swiper will exit, you will need to change your location in the Tinder app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -161,7 +161,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Are you sure?")
-                        .setMessage("Logout of Tinder Swiper? Tinder Swiper will close, you will need to restart the app")
+                        .setMessage("Logout of Date Swiper? Date Swiper will close, you will need to restart the app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -209,7 +209,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                                        initiatePurchaseFlow(getString(R.string.inapp_purchase_id), INAPP);
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -240,7 +240,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                                        initiatePurchaseFlow("getString(R.string.inapp_purchase_id)", INAPP);
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -271,7 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                     queryPurchases();
 
                     if (launchPurchase)
-                        initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                        initiatePurchaseFlow("getString(R.string.inapp_purchase_id)", INAPP);
                 }
             }
 
@@ -286,7 +286,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
         upgradeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initiatePurchaseFlow("date_swiper_pro_monthly_initial", INAPP);
+                initiatePurchaseFlow("getString(R.string.inapp_purchase_id)", INAPP);
             }
         });
 

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Tinder Swiper "
+            android:text="Date Swiper "
             android:textAlignment="center"
             android:textColor="@color/text_foreground"
             android:textSize="24dp" />

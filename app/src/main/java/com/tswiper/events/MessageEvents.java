@@ -1,4 +1,4 @@
-package com.tinderizer.events;
+package com.tswiper.events;
 
 public class MessageEvents {
     public static class SwipeEvent {

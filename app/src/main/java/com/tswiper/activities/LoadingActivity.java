@@ -1,4 +1,4 @@
-package com.tinderizer.activities;
+package com.tswiper.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-import com.tinderizer.R;
-import com.tinderizer.events.MessageEvents;
-import com.tinderizer.utils.Utils;
+import com.tswiper.R;
+import com.tswiper.events.MessageEvents;
+import com.tswiper.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
