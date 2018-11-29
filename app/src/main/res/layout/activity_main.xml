@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="40dp"
+    android:background="@color/bg_grey"
     android:gravity="top"
     tools:context=".activities.MainActivity">
 
@@ -25,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:background="@color/bg_grey"
         android:gravity="right"
         android:orientation="horizontal"
         android:weightSum="2">

@@ -43,19 +43,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
-            android:text="Swipes Remaining: 100" />
+            android:text="Swipes Remaining"
+            android:textColor="@color/text_foreground" />
 
         <ProgressBar
             android:id="@+id/swipeProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
             android:max="100"
             android:min="0"
             android:progress="100"
-            android:progressTint="@android:color/white" />
+            android:progressTint="@color/text_foreground" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -70,19 +71,27 @@
             android:id="@+id/settingsGear"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentEnd="false"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            app:srcCompat="@drawable/settings" />
+            app:srcCompat="@drawable/hamburger" />
+
+        <ImageView
+            android:id="@+id/tinder_swiper_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha=".3"
+            app:srcCompat="@drawable/logo_size_icon_invert" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Date Swiper "
+            android:text="Tinder Swiper "
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/text_foreground"
             android:textSize="24dp" />
     </RelativeLayout>
 
@@ -106,8 +115,8 @@
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="15dp"
         android:background="@color/bg_grey">
 
@@ -121,4 +130,13 @@
             app:adUnitId="ca-app-pub-5336818452987335/2176794052"></com.google.android.gms.ads.AdView>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/bg_grey"
+        android:orientation="horizontal"></LinearLayout>
+
 </RelativeLayout>

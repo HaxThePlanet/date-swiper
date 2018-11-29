@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.billingclient.api.BillingClient;
@@ -63,16 +62,16 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
     Button upgradeButton;
 
     @BindView(R.id.notifSwitch)
-    Switch notifSwitch;
+    android.support.v7.widget.SwitchCompat notifSwitch;
 
     @BindView(R.id.buy_layout)
     LinearLayout buyLayout;
 
     @BindView(R.id.fastSwipeSwitch)
-    Switch fastSwipeSwitch;
+    android.support.v7.widget.SwitchCompat fastSwipeSwitch;
 
     @BindView(R.id.backgroundSwipe)
-    Switch backgroundSwipe;
+    android.support.v7.widget.SwitchCompat backgroundSwipe;
 
     @BindView(R.id.versionTextview)
     TextView versionTextview;
@@ -131,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Change location?")
-                        .setMessage("Date Swiper will exit, you will need to change your location in the dating app")
+                        .setMessage("Tinder Swiper will exit, you will need to change your location in the Tinder app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -144,7 +143,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                                 } else {
                                     AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
                                     alert.setTitle("");
-                                    alert.setMessage("Dating app not installed");
+                                    alert.setMessage("The Tinder app is not installed");
                                     alert.setPositiveButton("OK", null);
                                     alert.show();
                                 }
@@ -162,7 +161,7 @@ public class SettingsActivity extends AppCompatActivity implements PurchasesUpda
                 android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder
                         .setTitle("Are you sure?")
-                        .setMessage("Logout of Date Swiper? Date Swiper will close, you will need to restart the app")
+                        .setMessage("Logout of Tinder Swiper? Tinder Swiper will close, you will need to restart the app")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
