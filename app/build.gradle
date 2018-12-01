@@ -21,11 +21,11 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "com.tinderizer"
+        applicationId "com.tswiper"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 39
-        versionName "1.0.0.39"
+        versionCode 3
+        versionName "1.0.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

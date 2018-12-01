@@ -102,6 +102,50 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947093893255:android:574d417f85f064b7",
+        "android_client_info": {
+          "package_name": "com.tswiper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947093893255-c4cuqak1g9m4vsvbk1h1h1qg4aipjr5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tswiper",
+            "certificate_hash": "8152410e48277903b2c21df0413582e28b8d39b2"
+          }
+        },
+        {
+          "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNrKu4NsXF42Mg7K86RMsbcN0lBs4mldY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947093893255-t0lrpm7p87hpbe0enbratgnqbva72np2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"
